@@ -1,0 +1,203 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #07111f;
+  --secondary: #0f172a;
+  --gold: #d4a853;
+  --gold-strong: #c8952f;
+  --gold-soft: #f8e6bd;
+  --muted: #64748b;
+  --card: #ffffff;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --ring-soft: rgba(212, 168, 83, 0.16);
+  --shadow-soft: 0 18px 40px rgba(7, 17, 31, 0.08);
+  --shadow-card: 0 22px 60px rgba(7, 17, 31, 0.1);
+  --shadow-hero: 0 35px 120px rgba(7, 17, 31, 0.24);
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --font-body: "Manrope";
+  --font-heading: "Plus Jakarta Sans";
+  --font-hero: "Sora";
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(212, 168, 83, 0.12), transparent 32rem),
+    linear-gradient(180deg, #ffffff 0%, var(--background) 42%, #eef3f8 100%);
+  color: var(--foreground);
+  font-family: var(--font-body), Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+  font-feature-settings: "ss01" 1, "cv02" 1, "cv03" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+[role="button"],
+a[href] {
+  cursor: pointer;
+}
+
+::selection {
+  background: rgba(212, 168, 83, 0.28);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.font-hero {
+  font-family: var(--font-hero), var(--font-heading), var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+button,
+.premium-heading {
+  font-family: var(--font-heading), var(--font-body), Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+img {
+  user-select: none;
+}
+
+.premium-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212, 168, 83, 0.72) rgba(15, 23, 42, 0.08);
+}
+
+.glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 18px 60px rgba(7, 17, 31, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.dark-luxury {
+  background:
+    linear-gradient(135deg, rgba(7, 17, 31, 0.98), rgba(15, 23, 42, 0.94)),
+    radial-gradient(circle at 70% 15%, rgba(212, 168, 83, 0.28), transparent 24rem);
+}
+
+.section-shell {
+  position: relative;
+}
+
+.section-shell::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(15, 23, 42, 0.08), transparent);
+  opacity: 0.55;
+}
+
+.premium-hover {
+  transition:
+    transform 320ms var(--ease-premium),
+    box-shadow 320ms var(--ease-premium),
+    border-color 320ms var(--ease-premium),
+    background-color 320ms var(--ease-premium),
+    color 320ms var(--ease-premium),
+    opacity 320ms var(--ease-premium);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.brand-marquee-viewport {
+  overflow: hidden;
+  padding: 10px 0 8px;
+}
+
+.brand-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 36px;
+  animation: brand-marquee 42s linear infinite;
+  will-change: transform;
+}
+
+.brand-marquee-group {
+  display: flex;
+  gap: 36px;
+}
+
+.brand-marquee-viewport:hover .brand-marquee-track {
+  animation-play-state: paused;
+}
+
+.brand-logo-item {
+  display: block;
+  width: 142px;
+  flex: 0 0 auto;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+@keyframes brand-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 16px));
+  }
+}
+
+@media (max-width: 1023px) {
+  .brand-marquee-viewport {
+    overflow-x: auto;
+    padding-inline: 1rem;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .brand-marquee-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .brand-marquee-track {
+    animation: none;
+    gap: 20px;
+  }
+
+  .brand-marquee-group {
+    gap: 20px;
+  }
+
+  .brand-logo-item {
+    width: 118px;
+  }
+}
