@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { Grid2X2, List, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Product } from "@/types/commerce";
 import { Filters, defaultFilterState, type FilterState } from "@/components/commerce/Filters";
 import { ProductGrid } from "@/components/commerce/ProductGrid";
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { babyBrands } from "@/data/brands";
 
 function sortProducts(products: Product[], sort: string) {
@@ -35,7 +34,8 @@ export function CatalogExplorer({
   subtitle,
   lockedCategory,
   initialBrand = "",
-  hideToolbar = false
+  hideToolbar = false,
+  productCardMode = "default"
 }: {
   products: Product[];
   title: string;
@@ -43,6 +43,7 @@ export function CatalogExplorer({
   lockedCategory?: string;
   initialBrand?: string;
   hideToolbar?: boolean;
+  productCardMode?: "default" | "home";
 }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("popular");
@@ -154,7 +155,7 @@ export function CatalogExplorer({
         <div>
           <Button variant="outline" className="mb-4 lg:hidden" onClick={() => setMobileFiltersOpen(true)}><SlidersHorizontal size={17} /> Mobile Filters</Button>
 
-          {visibleProducts.length ? <ProductGrid products={visibleProducts} /> : (
+          {visibleProducts.length ? <ProductGrid products={visibleProducts} cardVariant={productCardMode} /> : (
             <Card className="grid place-items-center px-6 py-16 text-center">
               <h2 className="text-xl font-semibold">No matching products found</h2>
               <p className="mt-2 text-sm text-slate-500">Try another brand, category, or reset the filters.</p>
@@ -162,21 +163,6 @@ export function CatalogExplorer({
             </Card>
           )}
 
-          {!hideToolbar && (
-            <>
-              <Card className="mt-6 flex flex-wrap items-center justify-between gap-3 p-4">
-                <div className="text-sm text-slate-500">{visibleProducts.length} premium product{visibleProducts.length === 1 ? "" : "s"} available</div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={resetAll}>Clear All</Button>
-                  <Button asChild variant="gold" size="sm"><Link href="/shop">Shop Root</Link></Button>
-                </div>
-              </Card>
-              <Card className="mt-6 p-6 text-center">
-                <h2 className="text-xl font-semibold">Filter system is live</h2>
-                <p className="mt-2 text-sm text-slate-500">Search, sort, category, brand, rating, stock, EMI, and price filtering are now fully interactive and backend-ready.</p>
-              </Card>
-            </>
-          )}
         </div>
       </div>
 

@@ -13,18 +13,210 @@ import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
 import type { Product } from "@/types/commerce";
 
-export function ProductCard({ product, compact = false }: { product: Product; compact?: boolean }) {
+const hashColorFromSeed = (seed: string) => {
+  let hash = 0;
+
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) % 1_000_000_007;
+  }
+
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue} 70% 54%)`;
+};
+
+const getProductSwatches = (product: Product) => {
+  const palette = [product.image, ...product.gallery].map((entry, index) => hashColorFromSeed(`${product.id}-${entry}-${index}`));
+
+  if (palette.length >= 3) {
+    return palette.slice(0, 3);
+  }
+
+  return [
+    ...palette,
+    hashColorFromSeed(`${product.id}-variant-1`),
+    hashColorFromSeed(`${product.id}-variant-2`),
+    hashColorFromSeed(`${product.id}-variant-3`)
+  ].slice(0, 3);
+};
+
+export function ProductCard({ product, compact = false, cardVariant = "default" }: { product: Product; compact?: boolean; cardVariant?: "default" | "home" }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
   const toggleCompare = useCartStore((state) => state.toggleCompare);
   const wishlist = useCartStore((state) => state.wishlist);
   const compare = useCartStore((state) => state.compare);
   const lines = useCartStore((state) => state.lines);
+
   const [quickOpen, setQuickOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [activeSwatch, setActiveSwatch] = useState(0);
+
   const wished = wishlist.includes(product.id);
   const compared = compare.includes(product.id);
   const inCart = lines.some((line) => line.product.id === product.id);
+  const homeCartStyle = cardVariant === "home";
+  const homeSwatches = getProductSwatches(product);
+
+  const quickViewModal = quickOpen ? (
+    <div className="fixed inset-0 z-[80] grid place-items-center bg-[#07111F]/55 p-4 backdrop-blur-sm" onClick={() => setQuickOpen(false)}>
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="grid w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_35px_120px_rgba(7,17,31,0.35)] md:grid-cols-[0.9fr_1.1fr]"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="relative min-h-[330px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f8fafc_78%,#eef3f8_100%)]">
+          <Image src={product.image} alt={product.name} fill className="object-contain p-8" sizes="50vw" />
+        </div>
+        <div className="p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <Badge>{product.badge ?? "Premium Pick"}</Badge>
+              <h3 className="mt-3 text-2xl font-bold text-[#07111F]">{product.name}</h3>
+            </div>
+            <button
+              className="grid h-10 w-10 place-items-center rounded-md hover:bg-slate-100"
+              onClick={() => setQuickOpen(false)}
+              aria-label="Close quick view"
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <Star className="fill-[#D4A853] text-[#D4A853]" size={16} />
+            {product.rating} rating / {product.reviewCount} reviews
+          </div>
+          <div className="mt-4 text-3xl font-black text-[#07111F]">{formatPrice(product.price)}</div>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            {product.warranty}. Monthly EMI starts at {formatPrice(product.emiMonthly)}.
+          </p>
+          <div className="mt-5 grid gap-2">
+            {product.features.slice(0, 4).map((feature) => (
+              <div key={feature} className="flex items-center gap-2 text-sm text-slate-700">
+                <Check size={16} className="text-[#D4A853]" />
+                {feature}
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <Button
+              variant="gold"
+              onClick={() => {
+                addToCart(product);
+                toast.success(`${product.name} added to cart`);
+              }}
+            >
+              <ShoppingCart size={16} />
+              Add to Cart
+            </Button>
+            <Button asChild variant="outline">
+              <Link href={`/product/${product.slug}`}>Product Details</Link>
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  ) : null;
+
+  if (homeCartStyle) {
+    return (
+      <>
+        <motion.article
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="group flex h-full min-h-[420px] flex-col overflow-hidden rounded-[14px] border border-slate-200/90 bg-white p-3 shadow-[0_4px_8px_rgba(0,0,0,0.06)] transition duration-250 ease-in-out hover:shadow-[0_12px_34px_rgba(0,0,0,0.14)]"
+        >
+          <Link href={`/product/${product.slug}`} className="block" aria-label={`Open ${product.name}`}>
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] shadow-[0_4px_8px_rgba(0,0,0,0.06)]">
+              {imageFailed ? (
+                <div className="grid h-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200 px-4 text-center">
+                  <div>
+                    <div className="text-sm font-black text-[#07111F]">{product.brand}</div>
+                    <div className="mt-1 text-xs font-semibold text-slate-500">{product.category.replaceAll("-", " ")}</div>
+                  </div>
+                </div>
+              ) : (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  sizes="(min-width: 1280px) 24vw, (min-width: 1024px) 30vw, (min-width: 768px) 48vw, 92vw"
+                  className="object-cover transition duration-250 group-hover:scale-105"
+                  onError={() => setImageFailed(true)}
+                />
+              )}
+              {product.discount ? (
+                <span className="absolute left-3 top-3 rounded-full border border-[#ddd6fe] bg-[#7c3aed] px-2.5 py-1 text-xs font-semibold text-white">
+                  -{product.discount}%
+                </span>
+              ) : null}
+            </div>
+          </Link>
+
+          <div className="mt-4 flex flex-1 flex-col">
+            <Link
+              href={`/product/${product.slug}`}
+              className="line-clamp-2 font-medium font-['Inter'] text-[1.04rem] leading-6 tracking-tight text-[#111827] transition duration-250 hover:text-[#7c3aed]"
+            >
+              {product.name}
+            </Link>
+            <p className="mt-1 text-xs font-normal text-slate-400">{product.category}</p>
+
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-[1.35rem] font-black leading-none text-[#7c3aed]">{formatPrice(product.price)}</span>
+              {product.oldPrice ? <span className="pb-0.5 text-sm font-medium text-slate-400 line-through">{formatPrice(product.oldPrice)}</span> : null}
+            </div>
+
+            <div className="mt-4 flex items-center gap-2">
+              {homeSwatches.map((swatch, index) => (
+                <button
+                  type="button"
+                  key={`${product.id}-${index}`}
+                  aria-label={`Select color ${index + 1}`}
+                  onClick={() => setActiveSwatch(index)}
+                  className={`h-4 w-4 rounded-full border transition hover:scale-110 ${
+                    activeSwatch === index ? "scale-110 ring-2 ring-[#7c3aed]" : "scale-100 ring-1 ring-white/80"
+                  }`}
+                  style={{ backgroundColor: swatch }}
+                />
+              ))}
+            </div>
+
+            <div className="mt-auto flex items-center justify-end gap-3 pt-4">
+              <ProductActionButton
+                label={wished ? "Remove from Wishlist" : "Add to Wishlist"}
+                active={wished}
+                variant="home"
+                onClick={() => {
+                  toggleWishlist(product.id);
+                  toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
+                }}
+              >
+                <Heart size={16} className={wished ? "fill-red-500 text-red-500" : ""} />
+              </ProductActionButton>
+              <ProductActionButton
+                label={inCart ? "Add more to cart" : "Add to cart"}
+                variant="home"
+                onClick={() => {
+                  addToCart(product);
+                  toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
+                }}
+              >
+                {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
+              </ProductActionButton>
+              <ProductActionButton label="Quick View" variant="home" onClick={() => setQuickOpen(true)}>
+                <Eye size={16} />
+              </ProductActionButton>
+            </div>
+          </div>
+        </motion.article>
+        {quickViewModal}
+      </>
+    );
+  }
 
   return (
     <>
@@ -36,7 +228,11 @@ export function ProductCard({ product, compact = false }: { product: Product; co
         transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         className="group flex h-full min-h-[390px] cursor-pointer flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] shadow-[0_16px_38px_rgba(7,17,31,0.07)] transition duration-300 hover:border-[#D4A853]/55 hover:shadow-[0_28px_70px_rgba(7,17,31,0.14)]"
       >
-        <div className={`relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-2.5 ${compact ? "h-[160px] sm:h-[176px]" : "h-[178px] sm:h-[192px] xl:h-[206px]"}`}>
+        <div
+          className={`relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-2.5 ${
+            compact ? "h-[160px] sm:h-[176px]" : "h-[178px] sm:h-[192px] xl:h-[206px]"
+          }`}
+        >
           <div className="relative h-full overflow-hidden rounded-[20px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f9fbff_72%,#eef3f8_100%)] shadow-inner">
             <div className="absolute inset-x-8 bottom-2 h-5 rounded-full bg-[#07111F]/8 blur-xl" />
             {imageFailed ? (
@@ -52,7 +248,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1536px) 25vw, 20vw"
-                className="object-contain p-3 transition duration-700 ease-out group-hover:scale-105"
+                className="object-cover transition duration-700 ease-out group-hover:scale-105"
                 onError={() => setImageFailed(true)}
               />
             )}
@@ -60,13 +256,16 @@ export function ProductCard({ product, compact = false }: { product: Product; co
           <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
           <div className="absolute left-4 top-4 flex flex-wrap gap-2">
             {product.discount ? <Badge className="border-rose-200/70 bg-rose-600 text-white shadow-[0_10px_26px_rgba(225,29,72,0.22)]">-{product.discount}%</Badge> : null}
-            {product.badge?.toLowerCase().includes("best") ? <Badge className="border-[#E6C675]/55 bg-[linear-gradient(135deg,#F8E6BD,#D4A853)] text-[#5e420d] shadow-[0_10px_26px_rgba(212,168,83,0.24)]">Best Seller</Badge> : null}
+            {product.badge?.toLowerCase().includes("best") ? (
+              <Badge className="border-[#E6C675]/55 bg-[linear-gradient(135deg,#F8E6BD,#D4A853)] text-[#5e420d] shadow-[0_10px_26px_rgba(212,168,83,0.24)]">Best Seller</Badge>
+            ) : null}
             {product.isNew ? <Badge className="border-emerald-200/70 bg-emerald-600 text-white shadow-[0_10px_26px_rgba(5,150,105,0.18)]">New</Badge> : null}
           </div>
           <div className="absolute right-4 top-4 grid gap-2 translate-x-0 opacity-100 transition duration-300 md:translate-x-3 md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
             <ProductActionButton
               label={wished ? "Remove from Wishlist" : "Add to Wishlist"}
               active={wished}
+              variant={homeCartStyle ? "home" : "default"}
               onClick={() => {
                 toggleWishlist(product.id);
                 toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
@@ -77,6 +276,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
             <ProductActionButton
               label="Compare"
               active={compared}
+              variant="default"
               onClick={() => {
                 toggleCompare(product.id);
                 toast.success(compared ? "Removed from compare" : "Added to compare");
@@ -84,7 +284,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
             >
               {compared ? <Check size={17} className="text-emerald-600" /> : <Scale size={17} />}
             </ProductActionButton>
-            <ProductActionButton label="Quick View" dark onClick={() => setQuickOpen(true)}>
+            <ProductActionButton label="Quick View" dark={true} variant="default" onClick={() => setQuickOpen(true)}>
               <Eye size={17} />
             </ProductActionButton>
           </div>
@@ -92,7 +292,11 @@ export function ProductCard({ product, compact = false }: { product: Product; co
         <div className="flex flex-1 flex-col p-4 sm:p-4.5">
           <div className="flex items-center gap-2">
             <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">{product.brand}</div>
-            <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${product.stock > 0 ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+            <span
+              className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${
+                product.stock > 0 ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+              }`}
+            >
               {product.stock > 0 ? "In Stock" : "Sold Out"}
             </span>
           </div>
@@ -121,7 +325,8 @@ export function ProductCard({ product, compact = false }: { product: Product; co
                 toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
               }}
             >
-              <ShoppingCart size={16} className="transition duration-300 group-hover:scale-110" /> {inCart ? "Add Again" : "Add to Cart"}
+              <ShoppingCart size={16} className="transition duration-300 group-hover:scale-110" />
+              {inCart ? "Add Again" : "Add to Cart"}
             </Button>
             <Button asChild variant="outline" className="w-full bg-white/90">
               <Link href={`/product/${product.slug}`}>View Details</Link>
@@ -129,52 +334,7 @@ export function ProductCard({ product, compact = false }: { product: Product; co
           </div>
         </div>
       </motion.article>
-
-      {quickOpen && (
-        <div className="fixed inset-0 z-[80] grid place-items-center bg-[#07111F]/55 p-4 backdrop-blur-sm" onClick={() => setQuickOpen(false)}>
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="grid w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_35px_120px_rgba(7,17,31,0.35)] md:grid-cols-[0.9fr_1.1fr]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="relative min-h-[330px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f8fafc_78%,#eef3f8_100%)]">
-              <Image src={product.image} alt={product.name} fill className="object-contain p-8" sizes="50vw" />
-            </div>
-            <div className="p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <Badge>{product.badge ?? "Premium Pick"}</Badge>
-                  <h3 className="mt-3 text-2xl font-bold text-[#07111F]">{product.name}</h3>
-                </div>
-                <button className="grid h-10 w-10 place-items-center rounded-md hover:bg-slate-100" onClick={() => setQuickOpen(false)} aria-label="Close quick view"><X size={18} /></button>
-              </div>
-              <div className="mt-4 flex items-center gap-2 text-sm">
-                <Star className="fill-[#D4A853] text-[#D4A853]" size={16} /> {product.rating} rating / {product.reviewCount} reviews
-              </div>
-              <div className="mt-4 text-3xl font-black text-[#07111F]">{formatPrice(product.price)}</div>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{product.warranty}. Monthly EMI starts at {formatPrice(product.emiMonthly)}.</p>
-              <div className="mt-5 grid gap-2">
-                {product.features.slice(0, 4).map((feature) => (
-                  <div key={feature} className="flex items-center gap-2 text-sm text-slate-700"><Check size={16} className="text-[#D4A853]" /> {feature}</div>
-                ))}
-              </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <Button
-                  variant="gold"
-                  onClick={() => {
-                    addToCart(product);
-                    toast.success(`${product.name} added to cart`);
-                  }}
-                >
-                  <ShoppingCart size={16} /> Add to Cart
-                </Button>
-                <Button asChild variant="outline"><Link href={`/product/${product.slug}`}>Product Details</Link></Button>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      )}
+      {quickViewModal}
     </>
   );
 }
@@ -183,15 +343,38 @@ function ProductActionButton({
   label,
   active,
   dark,
+  variant = "default",
   onClick,
   children
 }: {
   label: string;
   active?: boolean;
   dark?: boolean;
+  variant?: "default" | "home";
   onClick: () => void;
   children: React.ReactNode;
 }) {
+  const homeClass = variant === "home";
+
+  if (homeClass) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={label}
+        title={label}
+        className={`group/icon relative grid h-8 w-8 flex-none place-items-center rounded-full border border-slate-200 bg-white text-[#111827] transition-transform duration-250 ease-in-out shadow-[0_4px_8px_rgba(0,0,0,0.05)] hover:scale-105 hover:border-[#7c3aed] hover:text-[#7c3aed] hover:shadow-[0_10px_24px_rgba(124,58,237,0.2)] ${
+          active ? "border-[#7c3aed] bg-[#F5F3FF] text-[#7c3aed]" : ""
+        }`}
+      >
+        {children}
+        <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-full bg-[#111827] px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-[0_10px_24px_rgba(7,17,31,0.24)] transition duration-200 group-hover/icon:opacity-100">
+          {label}
+        </span>
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"

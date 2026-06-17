@@ -110,7 +110,7 @@ export function CrazyCollectionsSection({ products }: CrazyCollectionsSectionPro
                       src={product.image}
                       alt={product.name}
                       fill
-                      className="object-contain transition duration-250 group-hover:scale-105"
+                      className="object-cover transition duration-250 group-hover:scale-105"
                       sizes="(min-width: 1536px) 24vw, (min-width: 1024px) 30vw, (min-width: 768px) 48vw, 92vw"
                     />
                     {product.discount ? (

@@ -19,7 +19,7 @@ import { Input } from "@/components/ui/Input";
 import { formatPrice } from "@/lib/utils";
 
 const utilityMenuItems = [
-  { label: "About", href: "/contact" },
+  { label: "About", href: "/about-us" },
   { label: "FAQ", href: "/contact" }
 ] as const;
 
@@ -30,8 +30,16 @@ const mainNavItems = [
   { label: "SHOP", href: "/shop" },
   { label: "FROCKS", href: "/frocks" },
   { label: "SHORTS", href: "/shorts" },
-  { label: "PAGES", href: "/pages" }
+  { label: "PAGES", href: "/about-us" }
 ] as const;
+
+const pageSubmenuItems = [
+  { label: "About Us", href: "/about-us" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Blog", href: "/blog" }
+] as const;
+
+const pagesPathnames = ["/about-us", "/contact", "/blog"] as const;
 
 export function Header() {
   const [userOpen, setUserOpen] = useState(false);
@@ -42,7 +50,9 @@ export function Header() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [showHeaderGroupA, setShowHeaderGroupA] = useState(true);
+  const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLDivElement | null>(null);
+  const pagesMenuRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const lines = useCartStore((state) => state.lines);
@@ -125,6 +135,7 @@ export function Header() {
         (href === "/kids" && pathname.startsWith("/category/diapers")) ||
         (href === "/frocks" && pathname.startsWith("/category/clothing/frocks")) ||
         (href === "/shorts" && pathname.startsWith("/category/clothing/shorts")) ||
+        (href === "/about-us" && pagesPathnames.some((entry) => pathname === entry || pathname.startsWith(`${entry}/`))) ||
         (href === "/collection" && pathname.startsWith("/collection/")));
 
     return hasNestedMatch;
@@ -143,6 +154,7 @@ export function Header() {
     closeCartDrawer();
     setUserOpen(false);
     setCategorySidebarOpen(false);
+    setIsPagesMenuOpen(false);
   }, [pathname, closeCartDrawer]);
 
   useEffect(() => {
@@ -389,10 +401,71 @@ export function Header() {
               <span>All Categories</span>
             </button>
 
-          <nav className="relative flex min-h-full flex-1 items-center justify-center overflow-x-auto">
-            <div className="mx-auto flex items-center justify-center gap-7 whitespace-nowrap font-medium leading-none">
-              {mainNavItems.map((item) => {
+    <nav className="relative flex min-h-full flex-1 items-center justify-center overflow-visible">
+            <div className="mx-auto flex flex-wrap items-center justify-center gap-6 font-medium leading-none sm:gap-7">
+                  {mainNavItems.map((item) => {
                 const active = item.label === activeNavLabel;
+                if (item.label === "PAGES") {
+                    const isPagesActive = pagesPathnames.some((entry) => pathname === entry || pathname.startsWith(`${entry}/`));
+                  return (
+                    <div
+                      key={item.label}
+                      ref={pagesMenuRef}
+                      className="relative"
+                      onMouseEnter={() => setIsPagesMenuOpen(true)}
+                      onMouseLeave={() => setIsPagesMenuOpen(false)}
+                      onFocus={() => setIsPagesMenuOpen(true)}
+                      onBlur={() => setIsPagesMenuOpen(false)}
+                    >
+                      <button
+                        type="button"
+                        className={`group inline-flex h-11 cursor-pointer items-center whitespace-nowrap text-sm uppercase tracking-[0.05em] leading-none transition-colors duration-200 ease-in-out hover:text-[#ff2d55] ${isPagesActive ? "font-semibold text-[#ff2d55]" : "font-medium text-[#111827]"}`}
+                        onClick={() => setIsPagesMenuOpen((open) => !open)}
+                        onPointerEnter={() => setIsPagesMenuOpen(true)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Escape") {
+                            setIsPagesMenuOpen(false);
+                          } else if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            setIsPagesMenuOpen((open) => !open);
+                          }
+                        }}
+                        aria-expanded={isPagesMenuOpen}
+                        aria-haspopup="menu"
+                        aria-controls="pages-submenu"
+                      >
+                        <span className="relative inline-flex">
+                          {item.label}
+                          <span
+                            className={`pointer-events-none absolute bottom-[-6px] left-1/2 z-10 h-[2px] w-full max-w-full -translate-x-1/2 rounded-full bg-[#ff2d55] transition-[transform,opacity] duration-200 ease-in-out ${isPagesActive ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"} group-hover:scale-x-100 group-hover:opacity-100`}
+                            aria-hidden="true"
+                          />
+                        </span>
+                        <ChevronDown size={12} className={`ml-1 transition-transform duration-200 ${isPagesMenuOpen ? "rotate-180" : ""}`} />
+                      </button>
+                      <div
+                        id="pages-submenu"
+                        role="menu"
+                        className={`pointer-events-none absolute left-0 top-full z-20 flex w-max flex-col space-y-1 rounded-lg border border-slate-200 bg-white px-1 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] transition-all duration-180 ease-in-out ${
+                          isPagesMenuOpen ? "pointer-events-auto opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
+                        }`}
+                      >
+                        {pageSubmenuItems.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            href={subItem.href}
+                            role="menuitem"
+                            onClick={() => setIsPagesMenuOpen(false)}
+                            className="whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold text-[#111827] transition-colors duration-180 ease-in-out hover:text-[#ff2d55]"
+                          >
+                            {subItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <Link
                     key={item.label}
@@ -618,4 +691,3 @@ export function Header() {
     </header>
   );
 }
-
