@@ -23,7 +23,7 @@ export function Footer() {
               <Link
                 key={index}
                 href={index === 0 ? "/contact" : index === 1 ? "/orders" : "/blog"}
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.06] transition hover:border-[#EF8A9B] hover:bg-[#EF8A9B] hover:text-[#07111F]"
+                className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-[#EF8A9B] transition hover:border-[#FF3366] hover:bg-[#FF3366] hover:text-white"
               >
                 <Icon size={18} />
               </Link>

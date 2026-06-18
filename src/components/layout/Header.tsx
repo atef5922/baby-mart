@@ -759,7 +759,7 @@ export function Header() {
             </div>
             <div className="mt-5">
               <Input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => event.key === "Enter" && submitSearch()} placeholder="Search premium baby products, brands, guides..." />
-              <Button onClick={submitSearch} variant="gold" className="mt-2 w-full"><Search size={16} /> Search</Button>
+              <Button onClick={submitSearch} className="mt-2 w-full rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-[#07111F] hover:!text-white"><Search size={16} /> Search</Button>
             </div>
             <div className="mt-5 border-t border-slate-200 pt-4">
               <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Navigation</div>

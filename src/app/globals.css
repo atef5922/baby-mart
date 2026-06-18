@@ -145,14 +145,14 @@ img {
 .brand-marquee-track {
   display: flex;
   width: max-content;
-  gap: 36px;
+  gap: 24px;
   animation: brand-marquee 42s linear infinite;
   will-change: transform;
 }
 
 .brand-marquee-group {
   display: flex;
-  gap: 36px;
+  gap: 24px;
 }
 
 .brand-marquee-viewport:hover .brand-marquee-track {
@@ -161,7 +161,7 @@ img {
 
 .brand-logo-item {
   display: block;
-  width: 142px;
+  width: 220px;
   flex: 0 0 auto;
   cursor: pointer;
   scroll-snap-align: start;
@@ -190,14 +190,14 @@ img {
 
   .brand-marquee-track {
     animation: none;
-    gap: 20px;
+    gap: 16px;
   }
 
   .brand-marquee-group {
-    gap: 20px;
+    gap: 16px;
   }
 
   .brand-logo-item {
-    width: 118px;
+    width: min(190px, calc(100vw - 2rem));
   }
 }

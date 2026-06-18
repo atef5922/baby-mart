@@ -134,7 +134,7 @@ export default function HomePage() {
                 <h2 className="mt-2 text-xl sm:text-3xl font-bold text-white">Welcome to Baby Mart</h2>
                 <a
                   href="/shop"
-                  className="mt-4 inline-flex h-11 items-center rounded-md bg-[#FF3366] px-5 text-sm font-semibold text-white transition duration-200 ease-in-out hover:bg-[#07111F] hover:text-white"
+                  className="mt-4 inline-flex h-11 items-center rounded-md !border-transparent !bg-[#FF3366] px-5 text-sm font-semibold !text-white transition duration-200 ease-in-out hover:!bg-[#07111F] hover:!text-white"
                 >
                   Shop Now
                 </a>

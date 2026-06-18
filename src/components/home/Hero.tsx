@@ -25,36 +25,36 @@ export function Hero() {
   const slides = useMemo<HeroSlide[]>(
     () => [
       {
-        id: "hero-7",
-        image: "/products/banner7.png",
-        imageClass: "object-[center_30%]",
+        id: "hero-11",
+        image: "/products/banner11.png",
+        imageClass: "object-center",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
         contentClass: "max-w-[640px] text-left"
       },
       {
-        id: "hero-8",
-        image: "/products/banner8.png",
-        imageClass: "object-[center_22%]",
+        id: "hero-12",
+        image: "/products/banner12.png",
+        imageClass: "object-center",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
         contentClass: "max-w-[620px] text-left"
       },
       {
-        id: "hero-9",
-        image: "/products/banner9.png",
-        imageClass: "object-[center_60%]",
+        id: "hero-13",
+        image: "/products/banner13.png",
+        imageClass: "object-center",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
         contentClass: "max-w-[620px] text-left"
       },
       {
-        id: "hero-10",
-        image: "/products/banner10.png",
-        imageClass: "object-[center_top]",
+        id: "hero-14",
+        image: "/products/banner14.png",
+        imageClass: "object-center",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",

@@ -46,7 +46,7 @@ export default function AboutUsPage() {
               Baby Mart is built for families who want safe, beautiful, and reliable baby products without confusion. We bring together baby food, skin care, diapers, frocks, kidswear, shorts, and toys in a polished shopping experience.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild variant="gold">
+              <Button asChild className="rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-[#07111F] hover:!text-white">
                 <Link href="/shop">Shop Products <ArrowRight size={16} /></Link>
               </Button>
               <Button asChild variant="outline">

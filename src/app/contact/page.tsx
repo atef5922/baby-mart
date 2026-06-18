@@ -80,7 +80,7 @@ export default function ContactPage() {
               placeholder="Write your message"
               className="min-h-36 resize-none rounded-md border border-slate-200 p-3 text-sm outline-none transition focus:border-[#ff2d55] focus:ring-4 focus:ring-[#ff2d55]/10"
             />
-            <Button type="button" variant="gold" className="w-full sm:w-fit">
+            <Button type="button" className="w-full rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-[#07111F] hover:!text-white sm:w-fit">
               <Send size={16} />
               Submit Message
             </Button>

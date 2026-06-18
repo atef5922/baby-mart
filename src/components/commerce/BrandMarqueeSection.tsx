@@ -25,7 +25,7 @@ export function BrandMarqueeSection() {
           </Link>
         </div>
 
-        <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden">
+        <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden py-1">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-20 bg-gradient-to-r from-white via-white/92 to-transparent lg:block" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-20 bg-gradient-to-l from-white via-white/92 to-transparent lg:block" />
           <motion.div
@@ -57,14 +57,15 @@ export function BrandLogoItem({ brand }: { brand: BrandLogo }) {
       <motion.div
         whileHover={{ y: -6, scale: 1.02 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
-        className="relative flex h-[110px] w-[220px] items-center justify-center overflow-hidden rounded-[20px] border border-slate-200/90 bg-[linear-gradient(180deg,#FFFFFF_0%,#FBFCFE_100%)] px-8 shadow-[0_14px_34px_rgba(15,23,42,0.08)] transition duration-300 group-hover:border-[#D4A853] group-hover:shadow-[0_20px_44px_rgba(15,23,42,0.12),0_0_0_4px_rgba(212,168,83,0.12)]"
+        className="relative flex h-[112px] w-full items-center justify-center overflow-hidden rounded-[18px] border border-slate-200/90 bg-white px-6 shadow-[0_12px_30px_rgba(15,23,42,0.08)] transition duration-300 group-hover:border-[#FFB3CC] group-hover:shadow-[0_18px_42px_rgba(255,51,102,0.12),0_0_0_4px_rgba(255,51,102,0.08)]"
       >
-        <div className="absolute inset-[1px] rounded-[19px] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(247,250,252,0.96))]" />
-        <div className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-[#F8DEAA] via-[#D4A853] to-[#C8922D] opacity-0 transition duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-[1px] rounded-[17px] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FAFC_100%)]" />
+        <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#FFB3CC] to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-y-5 left-0 w-1 rounded-r-full bg-[#FF3366] opacity-0 transition duration-300 group-hover:opacity-100" />
         {brand.logoSrc ? (
-          <Image src={brand.logoSrc} alt={`${brand.name} logo`} width={138} height={52} className="relative z-10 max-h-[52px] w-auto object-contain transition duration-300 group-hover:scale-[1.04]" />
+          <Image src={brand.logoSrc} alt={`${brand.name} logo`} width={138} height={52} className="relative z-10 max-h-[54px] max-w-[150px] object-contain transition duration-300 group-hover:scale-[1.04]" />
         ) : (
-          <span className={`relative z-10 text-center text-[1.9rem] font-black leading-none tracking-[-0.03em] transition duration-300 group-hover:scale-[1.04] ${brand.wordmarkClass}`}>
+          <span className={`relative z-10 max-w-full text-center text-[1.55rem] font-black leading-tight tracking-[-0.02em] transition duration-300 group-hover:scale-[1.04] sm:text-[1.75rem] ${brand.wordmarkClass}`}>
             {brand.name}
           </span>
         )}
