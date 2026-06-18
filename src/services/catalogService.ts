@@ -35,6 +35,9 @@ export function getCategoryBySlug(slug: string) {
   return categories.find((category) => category.slug === slug);
 }
 
-export function getRelatedProducts(category: CategorySlug, productId?: string) {
-  return products.filter((product) => product.category === category && product.id !== productId).slice(0, 4);
+export function getRelatedProducts(category: CategorySlug, productId?: string, limit = 8) {
+  const primary = products.filter((product) => product.category === category && product.id !== productId);
+  const fallback = products.filter((product) => product.category !== category && product.id !== productId);
+
+  return [...primary, ...fallback].slice(0, limit);
 }
