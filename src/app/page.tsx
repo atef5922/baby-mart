@@ -41,6 +41,11 @@ export default function HomePage() {
                     sizes="(min-width: 1024px) 58vw, 92vw"
                   />
                 </div>
+                <div className="relative z-10 p-6 sm:p-8">
+                  <Button asChild className="h-11 w-fit rounded-md bg-[linear-gradient(120deg,#FDE68A,#FECACA)] px-6 font-bold uppercase text-[#371a00] transition duration-200 hover:scale-[1.02] hover:bg-[linear-gradient(120deg,#ffd17a,#ff9f9f)] hover:text-[#fff8f1] hover:shadow-[0_20px_40px_rgba(254,215,170,0.45)]">
+                    <Link href="/shop">SHOP NOW</Link>
+                  </Button>
+                </div>
               </div>
             </Card>
 
