@@ -24,7 +24,7 @@ export default function HomePage() {
             <div className="inline-flex items-center text-[11px] font-black uppercase tracking-[0.24em] text-[#C8922D]">
               Editorial Highlights
             </div>
-            <h2 className="mt-3 bg-[linear-gradient(90deg,#ff5ca8,#ff8b2c,#ffd54a,#67d8b4,#5bb5ff,#a27dff)] bg-clip-text font-['Inter',_'Poppins',_sans-serif] text-[2rem] font-bold leading-[1.02] tracking-[-0.03em] text-transparent sm:text-[2.7rem] lg:text-[3rem]">
+            <h2 className="mt-3 bg-[linear-gradient(90deg,#ff5ca8,#ff8b2c,#ffd54a,#67d8b4,#5bb5ff,#a27dff)] bg-clip-text pb-1 font-['Inter',_'Poppins',_sans-serif] text-[2rem] font-bold leading-[1.16] tracking-normal text-transparent sm:text-[2.7rem] lg:text-[3rem]">
               Baby Fashion Editorial
             </h2>
           </header>
