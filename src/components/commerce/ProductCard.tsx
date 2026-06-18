@@ -25,6 +25,10 @@ const hashColorFromSeed = (seed: string) => {
 };
 
 const getProductSwatches = (product: Product) => {
+  if (product.colorVariants?.length) {
+    return product.colorVariants.slice(0, 3);
+  }
+
   const palette = [product.image, ...product.gallery].map((entry, index) => hashColorFromSeed(`${product.id}-${entry}-${index}`));
 
   if (palette.length >= 3) {
@@ -39,6 +43,17 @@ const getProductSwatches = (product: Product) => {
   ].slice(0, 3);
 };
 
+const fallbackImageByCategory: Record<Product["category"], string> = {
+  "baby-food": "/products/baby%20food/1752902705.jpg",
+  "baby-products": "/products/baby%20product/0_16.jpg",
+  "baby-skin-care": "/products/baby%20skin%20care/1761121421.jpg",
+  frocks: "/products/frogs/0590000017664.webp",
+  "kids-dress": "/products/kids%20dress/kids11_e392b641-3589-4512-81ea-5e7f54f6e199_600x.webp",
+  pampers: "/products/pampers/1761122103.jpg",
+  shorts: "/products/shorts/download.jpg",
+  toys: "/products/toy/0_6.jpeg"
+};
+
 export function ProductCard({ product, compact = false, cardVariant = "default" }: { product: Product; compact?: boolean; cardVariant?: "default" | "home" }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
@@ -49,6 +64,7 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
 
   const [quickOpen, setQuickOpen] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [fallbackFailed, setFallbackFailed] = useState(false);
   const [activeSwatch, setActiveSwatch] = useState(0);
 
   const wished = wishlist.includes(product.id);
@@ -56,6 +72,17 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
   const inCart = lines.some((line) => line.product.id === product.id);
   const homeCartStyle = cardVariant === "home";
   const homeSwatches = getProductSwatches(product);
+  const fallbackImage = fallbackImageByCategory[product.category];
+  const displayImage = imageFailed ? fallbackImage : product.image;
+  const unoptimizedImage = displayImage.startsWith("http");
+  const handleImageError = () => {
+    if (imageFailed) {
+      setFallbackFailed(true);
+      return;
+    }
+
+    setImageFailed(true);
+  };
 
   const quickViewModal = quickOpen ? (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-[#07111F]/55 p-4 backdrop-blur-sm" onClick={() => setQuickOpen(false)}>
@@ -66,7 +93,11 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative min-h-[330px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f8fafc_78%,#eef3f8_100%)]">
-          <Image src={product.image} alt={product.name} fill className="object-contain p-8" sizes="50vw" />
+          {fallbackFailed ? (
+            <div className="grid h-full place-items-center px-5 text-center text-sm font-semibold text-slate-500">{product.name}</div>
+          ) : (
+            <Image src={displayImage} alt={product.name} fill className="object-contain p-8" sizes="50vw" unoptimized={unoptimizedImage} onError={handleImageError} />
+          )}
         </div>
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
@@ -131,7 +162,7 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
         >
           <Link href={`/product/${product.slug}`} className="block" aria-label={`Open ${product.name}`}>
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[12px] shadow-[0_4px_8px_rgba(0,0,0,0.06)]">
-              {imageFailed ? (
+              {fallbackFailed ? (
                 <div className="grid h-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200 px-4 text-center">
                   <div>
                     <div className="text-sm font-black text-[#07111F]">{product.brand}</div>
@@ -140,12 +171,13 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
                 </div>
               ) : (
                 <Image
-                  src={product.image}
+                  src={displayImage}
                   alt={product.name}
                   fill
                   sizes="(min-width: 1280px) 24vw, (min-width: 1024px) 30vw, (min-width: 768px) 48vw, 92vw"
-                  className="object-cover transition duration-250 group-hover:scale-105"
-                  onError={() => setImageFailed(true)}
+                  className="bg-white object-contain transition duration-250 group-hover:scale-105"
+                  unoptimized={unoptimizedImage}
+                  onError={handleImageError}
                 />
               )}
               {product.discount ? (
@@ -170,46 +202,48 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
               {product.oldPrice ? <span className="pb-0.5 text-sm font-medium text-slate-400 line-through">{formatPrice(product.oldPrice)}</span> : null}
             </div>
 
-            <div className="mt-4 flex items-center gap-2">
-              {homeSwatches.map((swatch, index) => (
-                <button
-                  type="button"
-                  key={`${product.id}-${index}`}
-                  aria-label={`Select color ${index + 1}`}
-                  onClick={() => setActiveSwatch(index)}
-                  className={`h-4 w-4 rounded-full border transition hover:scale-110 ${
-                    activeSwatch === index ? "scale-110 ring-2 ring-[#7c3aed]" : "scale-100 ring-1 ring-white/80"
-                  }`}
-                  style={{ backgroundColor: swatch }}
-                />
-              ))}
-            </div>
+            <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+              <div className="flex items-center gap-2">
+                {homeSwatches.map((swatch, index) => (
+                  <button
+                    type="button"
+                    key={`${product.id}-${index}`}
+                    aria-label={`Select color ${index + 1}`}
+                    onClick={() => setActiveSwatch(index)}
+                    className={`h-4 w-4 rounded-full border transition hover:scale-110 ${
+                      activeSwatch === index ? "scale-110 ring-2 ring-[#7c3aed]" : "scale-100 ring-1 ring-white/80"
+                    }`}
+                    style={{ backgroundColor: swatch }}
+                  />
+                ))}
+              </div>
 
-            <div className="mt-auto flex items-center justify-end gap-3 pt-4">
-              <ProductActionButton
-                label={wished ? "Remove from Wishlist" : "Add to Wishlist"}
-                active={wished}
-                variant="home"
-                onClick={() => {
-                  toggleWishlist(product.id);
-                  toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
-                }}
-              >
-                <Heart size={16} className={wished ? "fill-red-500 text-red-500" : ""} />
-              </ProductActionButton>
-              <ProductActionButton
-                label={inCart ? "Add more to cart" : "Add to cart"}
-                variant="home"
-                onClick={() => {
-                  addToCart(product);
-                  toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
-                }}
-              >
-                {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
-              </ProductActionButton>
-              <ProductActionButton label="Quick View" variant="home" onClick={() => setQuickOpen(true)}>
-                <Eye size={16} />
-              </ProductActionButton>
+              <div className="flex items-center gap-2.5">
+                <ProductActionButton
+                  label={wished ? "Remove from Wishlist" : "Add to Wishlist"}
+                  active={wished}
+                  variant="home"
+                  onClick={() => {
+                    toggleWishlist(product.id);
+                    toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
+                  }}
+                >
+                  <Heart size={16} className={wished ? "fill-red-500 text-red-500" : ""} />
+                </ProductActionButton>
+                <ProductActionButton label="Quick View" variant="home" onClick={() => setQuickOpen(true)}>
+                  <Eye size={16} />
+                </ProductActionButton>
+                <ProductActionButton
+                  label={inCart ? "Add more to cart" : "Add to cart"}
+                  variant="home"
+                  onClick={() => {
+                    addToCart(product);
+                    toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
+                  }}
+                >
+                  {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
+                </ProductActionButton>
+              </div>
             </div>
           </div>
         </motion.article>
@@ -229,13 +263,13 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
         className="group flex h-full min-h-[390px] cursor-pointer flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] shadow-[0_16px_38px_rgba(7,17,31,0.07)] transition duration-300 hover:border-[#D4A853]/55 hover:shadow-[0_28px_70px_rgba(7,17,31,0.14)]"
       >
         <div
-          className={`relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 p-2.5 ${
+          className={`relative overflow-visible bg-gradient-to-br from-slate-50 via-white to-slate-100 p-2.5 ${
             compact ? "h-[160px] sm:h-[176px]" : "h-[178px] sm:h-[192px] xl:h-[206px]"
           }`}
         >
           <div className="relative h-full overflow-hidden rounded-[20px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f9fbff_72%,#eef3f8_100%)] shadow-inner">
             <div className="absolute inset-x-8 bottom-2 h-5 rounded-full bg-[#07111F]/8 blur-xl" />
-            {imageFailed ? (
+            {fallbackFailed ? (
               <div className="grid h-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200 px-4 text-center">
                 <div>
                   <div className="text-sm font-black text-[#07111F]">{product.brand}</div>
@@ -244,12 +278,13 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
               </div>
             ) : (
               <Image
-                src={product.image}
+                src={displayImage}
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1536px) 25vw, 20vw"
-                className="object-cover transition duration-700 ease-out group-hover:scale-105"
-                onError={() => setImageFailed(true)}
+                className="bg-white object-contain transition duration-700 ease-out group-hover:scale-105"
+                unoptimized={unoptimizedImage}
+                onError={handleImageError}
               />
             )}
           </div>
@@ -368,7 +403,7 @@ function ProductActionButton({
         }`}
       >
         {children}
-        <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-full bg-[#111827] px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-[0_10px_24px_rgba(7,17,31,0.24)] transition duration-200 group-hover/icon:opacity-100">
+        <span className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 whitespace-nowrap rounded-[4px] bg-[#111827] px-2.5 py-1.5 text-[11px] font-semibold text-white opacity-0 shadow-[0_10px_24px_rgba(7,17,31,0.24)] transition duration-200 group-hover/icon:opacity-100">
           {label}
         </span>
       </button>
@@ -390,7 +425,7 @@ function ProductActionButton({
       }`}
     >
       {children}
-      <span className="pointer-events-none absolute right-11 top-1/2 z-20 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#07111F] px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-[0_12px_30px_rgba(7,17,31,0.2)] transition duration-200 group-hover/action:opacity-100 group-focus-visible/action:opacity-100">
+      <span className="pointer-events-none absolute right-full top-1/2 z-20 mr-2 -translate-y-1/2 whitespace-nowrap rounded-[4px] bg-[#07111F] px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-[0_12px_30px_rgba(7,17,31,0.2)] transition duration-200 group-hover/action:opacity-100 group-focus-visible/action:opacity-100">
         {label}
       </span>
     </button>

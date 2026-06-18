@@ -4,7 +4,7 @@ import type { Product } from "@/types/commerce";
 export function ProductGrid({
   products,
   compact = false,
-  cardVariant = "default"
+  cardVariant = "home"
 }: {
   products: Product[];
   compact?: boolean;

@@ -3,12 +3,16 @@
 import { Grid2X2, List, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Product } from "@/types/commerce";
+import { DropdownSelect } from "@/components/commerce/DropdownSelect";
 import { Filters, defaultFilterState, type FilterState } from "@/components/commerce/Filters";
+import { Pagination } from "@/components/commerce/Pagination";
 import { ProductGrid } from "@/components/commerce/ProductGrid";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { babyBrands } from "@/data/brands";
+
+const PRODUCTS_PER_PAGE = 8;
 
 function sortProducts(products: Product[], sort: string) {
   const cloned = [...products];
@@ -39,7 +43,7 @@ export function CatalogExplorer({
 }: {
   products: Product[];
   title: string;
-  subtitle: string;
+  subtitle?: string;
   lockedCategory?: string;
   initialBrand?: string;
   hideToolbar?: boolean;
@@ -49,6 +53,7 @@ export function CatalogExplorer({
   const [sort, setSort] = useState("popular");
   const [brand, setBrand] = useState(initialBrand);
   const [category, setCategory] = useState(lockedCategory ?? "");
+  const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     ...defaultFilterState,
@@ -75,11 +80,16 @@ export function CatalogExplorer({
     return sortProducts(filtered, sort);
   }, [products, query, sort, brand, category, filters]);
 
+  const totalPages = Math.max(1, Math.ceil(visibleProducts.length / PRODUCTS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedProducts = visibleProducts.slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE);
+
   const resetAll = () => {
     setQuery("");
     setSort("popular");
     setBrand(initialBrand);
     setCategory(lockedCategory ?? "");
+    setPage(1);
     setFilters({
       ...defaultFilterState,
       brands: initialBrand ? [initialBrand] : [],
@@ -88,12 +98,14 @@ export function CatalogExplorer({
   };
 
   const updateFilters = (next: FilterState) => {
+    setPage(1);
     setFilters(next);
     if (!lockedCategory) setCategory(next.categories.length === 1 ? next.categories[0] : "");
     if (!initialBrand) setBrand(next.brands.length === 1 ? next.brands[0] : "");
   };
 
   const updateCategory = (nextCategory: string) => {
+    setPage(1);
     setCategory(nextCategory);
     if (!lockedCategory) {
       setFilters((current) => ({
@@ -103,46 +115,55 @@ export function CatalogExplorer({
     }
   };
 
+  const categoryOptions = [...new Set(products.map((product) => product.category))].map((item) => ({
+    label: item.replaceAll("-", " "),
+    value: item
+  }));
+
+  const brandOptions = babyBrands.map((entry) => ({
+    label: entry.name,
+    value: entry.name
+  }));
+
+  const sortOptions = [
+    { label: "Sort by Popular", value: "popular" },
+    { label: "Latest Arrivals", value: "latest" },
+    { label: "Price Low-High", value: "price-asc" },
+    { label: "Price High-Low", value: "price-desc" },
+    { label: "Top Rated", value: "rating" },
+    { label: "Brand A-Z", value: "brand" }
+  ];
+
   return (
     <>
       {!hideToolbar && (
         <div className="rounded-lg bg-white p-5 shadow-[0_12px_40px_rgba(7,17,31,0.07)]">
-          <div className="text-sm text-slate-500">{title}</div>
           <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-semibold tracking-normal">{title}</h1>
-              <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+              <h1 className="w-fit max-w-full bg-[linear-gradient(90deg,#ff5ca8,#ff8b2c,#ffd54a,#67d8b4,#5bb5ff,#a27dff)] bg-clip-text font-['Inter',_'Poppins',_sans-serif] text-[2rem] font-bold leading-[1.02] tracking-normal text-transparent sm:text-[2.7rem]">
+                {title}
+              </h1>
+              {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="icon" aria-label="Grid view"><Grid2X2 size={18} /></Button>
-              <Button variant="outline" size="icon" aria-label="List view"><List size={18} /></Button>
+              <Button variant="outline" size="icon" className="rounded-md" aria-label="Grid view"><Grid2X2 size={18} /></Button>
+              <Button variant="outline" size="icon" className="rounded-md" aria-label="List view"><List size={18} /></Button>
             </div>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-[1fr_180px_180px_180px]">
-            <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search within products..." />
-            <select
-              value={category}
-              onChange={(event) => updateCategory(event.target.value)}
-              disabled={!!lockedCategory}
-              className="h-11 rounded-md border border-slate-200 px-3 text-sm disabled:bg-slate-50"
-            >
-              <option value="">All Categories</option>
-              {[...new Set(products.map((product) => product.category))].map((item) => (
-                <option key={item} value={item}>{item.replaceAll("-", " ")}</option>
-              ))}
-            </select>
-            <select value={brand} onChange={(event) => setBrand(event.target.value)} className="h-11 rounded-md border border-slate-200 px-3 text-sm">
-              <option value="">All Brands</option>
-              {babyBrands.map((entry) => <option key={entry.slug} value={entry.name}>{entry.name}</option>)}
-            </select>
-            <select value={sort} onChange={(event) => setSort(event.target.value)} className="h-11 rounded-md border border-slate-200 px-3 text-sm">
-              <option value="popular">Sort by Popular</option>
-              <option value="latest">Latest Arrivals</option>
-              <option value="price-asc">Price Low-High</option>
-              <option value="price-desc">Price High-Low</option>
-              <option value="rating">Top Rated</option>
-              <option value="brand">Brand A-Z</option>
-            </select>
+            <Input value={query} onChange={(event) => {
+              setQuery(event.target.value);
+              setPage(1);
+            }} placeholder="Search within products..." />
+            <DropdownSelect value={category} onChange={updateCategory} options={categoryOptions} placeholder="All Categories" disabled={!!lockedCategory} />
+            <DropdownSelect value={brand} onChange={(nextBrand) => {
+              setBrand(nextBrand);
+              setPage(1);
+            }} options={brandOptions} placeholder="All Brands" />
+            <DropdownSelect value={sort} onChange={(nextSort) => {
+              setSort(nextSort);
+              setPage(1);
+            }} options={sortOptions} placeholder="Sort by Popular" />
           </div>
         </div>
       )}
@@ -153,13 +174,18 @@ export function CatalogExplorer({
         </aside>
 
         <div>
-          <Button variant="outline" className="mb-4 lg:hidden" onClick={() => setMobileFiltersOpen(true)}><SlidersHorizontal size={17} /> Mobile Filters</Button>
+          <Button variant="outline" className="mb-4 rounded-md lg:hidden" onClick={() => setMobileFiltersOpen(true)}><SlidersHorizontal size={17} /> Mobile Filters</Button>
 
-          {visibleProducts.length ? <ProductGrid products={visibleProducts} cardVariant={productCardMode} /> : (
+          {visibleProducts.length ? (
+            <>
+              <ProductGrid products={paginatedProducts} cardVariant={productCardMode} />
+              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
+            </>
+          ) : (
             <Card className="grid place-items-center px-6 py-16 text-center">
               <h2 className="text-xl font-semibold">No matching products found</h2>
               <p className="mt-2 text-sm text-slate-500">Try another brand, category, or reset the filters.</p>
-              <Button variant="gold" className="mt-5" onClick={resetAll}>Reset Filters</Button>
+              <Button className="mt-5 rounded-md bg-[#FF3366] text-white hover:bg-[#07111F] hover:text-white" onClick={resetAll}>Reset Filters</Button>
             </Card>
           )}
 

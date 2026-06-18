@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState, type ReactNode } from "react";
 import { Check, Heart, Eye, ShoppingCart, X } from "lucide-react";
 import { toast } from "sonner";
+import { Pagination } from "@/components/commerce/Pagination";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
@@ -15,6 +16,8 @@ import type { Product } from "@/types/commerce";
 interface NewArrivalsSectionProps {
   products: Product[];
 }
+
+const HOME_PRODUCTS_PER_PAGE = 8;
 
 const paletteBank = [
   ["#ef4444", "#f97316", "#22c55e"],
@@ -50,7 +53,7 @@ function ActionIconButton({
       }`}
     >
       {children}
-      <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 rounded-full bg-[#111827] px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-[0_10px_24px_rgba(7,17,31,0.24)] transition duration-200 group-hover/icon:opacity-100">
+      <span className="pointer-events-none absolute bottom-full right-0 z-20 mb-2 whitespace-nowrap rounded-[4px] bg-[#111827] px-2.5 py-1.5 text-[11px] font-semibold text-white opacity-0 shadow-[0_10px_24px_rgba(7,17,31,0.24)] transition duration-200 group-hover/icon:opacity-100">
         {label}
       </span>
     </button>
@@ -60,13 +63,21 @@ function ActionIconButton({
 export function NewArrivalsSection({ products }: NewArrivalsSectionProps) {
   const [activeQuickProduct, setActiveQuickProduct] = useState<Product | null>(null);
   const [activeSwatch, setActiveSwatch] = useState<Record<string, string>>({});
+  const [page, setPage] = useState(1);
 
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
   const wishlist = useCartStore((state) => state.wishlist);
   const lines = useCartStore((state) => state.lines);
 
-  const visibleProducts = useMemo(() => products.slice(0, 8), [products]);
+  const visibleProducts = useMemo(() => {
+    const arrivals = products.filter((product) => product.isNew || product.tags.includes("new-arrival"));
+    return arrivals.length ? arrivals : products;
+  }, [products]);
+
+  const totalPages = Math.max(1, Math.ceil(visibleProducts.length / HOME_PRODUCTS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedProducts = visibleProducts.slice((currentPage - 1) * HOME_PRODUCTS_PER_PAGE, currentPage * HOME_PRODUCTS_PER_PAGE);
 
   return (
     <section className="w-full">
@@ -91,7 +102,7 @@ export function NewArrivalsSection({ products }: NewArrivalsSectionProps) {
         </div>
 
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {visibleProducts.map((product) => {
+          {paginatedProducts.map((product) => {
             const palette = getPalette(product);
             const inCart = lines.some((line) => line.product.id === product.id);
             const wished = wishlist.includes(product.id);
@@ -138,53 +149,57 @@ export function NewArrivalsSection({ products }: NewArrivalsSectionProps) {
                     ) : null}
                   </div>
 
-                  <div className="mt-4 flex items-center gap-2">
-                    {palette.map((swatch) => (
-                      <button
-                        type="button"
-                        key={`${product.id}-${swatch}`}
-                        aria-label={`Select color ${swatch}`}
-                        onClick={() =>
-                          setActiveSwatch((prev) => ({
-                            ...prev,
-                            [product.id]: swatch
-                          }))
-                        }
-                        className={`h-4 w-4 rounded-full border transition hover:scale-110 ${selected === swatch ? "scale-110 ring-2 ring-[#7c3aed]" : "scale-100 ring-1 ring-white/80"}`}
-                        style={{ backgroundColor: swatch }}
-                      />
-                    ))}
-                  </div>
+                  <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+                    <div className="flex items-center gap-2">
+                      {palette.map((swatch) => (
+                        <button
+                          type="button"
+                          key={`${product.id}-${swatch}`}
+                          aria-label={`Select color ${swatch}`}
+                          onClick={() =>
+                            setActiveSwatch((prev) => ({
+                              ...prev,
+                              [product.id]: swatch
+                            }))
+                          }
+                          className={`h-4 w-4 rounded-full border transition hover:scale-110 ${selected === swatch ? "scale-110 ring-2 ring-[#7c3aed]" : "scale-100 ring-1 ring-white/80"}`}
+                          style={{ backgroundColor: swatch }}
+                        />
+                      ))}
+                    </div>
 
-                  <div className="mt-auto flex items-center justify-end gap-3">
-                    <ActionIconButton
-                      label={wished ? "Remove from wishlist" : "Add to wishlist"}
-                      active={wished}
-                      onClick={() => {
-                        toggleWishlist(product.id);
-                        toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
-                      }}
-                    >
-                      <Heart size={16} className={wished ? "fill-red-500 text-red-500" : ""} />
-                    </ActionIconButton>
-                    <ActionIconButton label="Quick view" onClick={() => setActiveQuickProduct(product)}>
-                      <Eye size={16} />
-                    </ActionIconButton>
-                    <ActionIconButton
-                      label={inCart ? "Add more to cart" : "Add to cart"}
-                      onClick={() => {
-                        addToCart(product);
-                        toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
-                      }}
-                    >
-                      {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
-                    </ActionIconButton>
+                    <div className="flex items-center gap-2.5">
+                      <ActionIconButton
+                        label={wished ? "Remove from wishlist" : "Add to wishlist"}
+                        active={wished}
+                        onClick={() => {
+                          toggleWishlist(product.id);
+                          toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
+                        }}
+                      >
+                        <Heart size={16} className={wished ? "fill-red-500 text-red-500" : ""} />
+                      </ActionIconButton>
+                      <ActionIconButton label="Quick view" onClick={() => setActiveQuickProduct(product)}>
+                        <Eye size={16} />
+                      </ActionIconButton>
+                      <ActionIconButton
+                        label={inCart ? "Add more to cart" : "Add to cart"}
+                        onClick={() => {
+                          addToCart(product);
+                          toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
+                        }}
+                      >
+                        {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
+                      </ActionIconButton>
+                    </div>
                   </div>
                 </div>
               </motion.article>
             );
           })}
         </div>
+
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       <AnimatePresence>
