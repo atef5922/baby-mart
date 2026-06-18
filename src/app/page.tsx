@@ -40,17 +40,6 @@ export default function HomePage() {
                     className="pointer-events-none object-cover object-center transition duration-500 group-hover:scale-[1.02]"
                     sizes="(min-width: 1024px) 58vw, 92vw"
                   />
-                  <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,17,31,0) 24%,rgba(7,17,31,0.28) 75%,rgba(7,17,31,0.56) 100%)]" />
-                  <span className="absolute left-[-12%] top-[-16%] h-[180px] w-[180px] rounded-full bg-[#ffe3ef] blur-3xl" />
-                  <span className="absolute right-[-10%] bottom-[-20%] h-[220px] w-[220px] rounded-full bg-[#d9f6e9] blur-3xl" />
-                </div>
-                <div className="relative z-10 flex max-w-[28rem] flex-col gap-3 p-6 sm:p-8">
-                  <div className="text-[12px] font-black uppercase tracking-[0.22em] text-[#ffe6f0]">Get Set 2017</div>
-                  <h3 className="text-[2.1rem] font-black leading-[0.98] tracking-[-0.05em] text-white sm:text-[2.6rem]">Warm Clothes</h3>
-                  <p className="text-sm font-medium text-white/85">Baby Fashion Collection</p>
-                  <Button asChild className="mt-4 h-11 w-fit rounded-md bg-[linear-gradient(120deg,#FDE68A,#FECACA)] px-6 font-bold uppercase text-[#371a00] transition duration-200 hover:scale-[1.02] hover:bg-[linear-gradient(120deg,#ffd17a,#ff9f9f)] hover:text-[#fff8f1] hover:shadow-[0_20px_40px_rgba(254,215,170,0.45)]">
-                    <Link href="/shop">SHOP NOW</Link>
-                  </Button>
                 </div>
               </div>
             </Card>
