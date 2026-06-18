@@ -1,4 +1,4 @@
-import { Check, ShieldCheck, Sparkles, Star, Truck } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { ProductPurchasePanel } from "@/components/commerce/ProductPurchasePanel";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
@@ -74,42 +74,7 @@ export function ProductInfoPanel({ product }: { product: Product }) {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <ServiceCard icon={Truck} title="Fast Delivery" text="Dhaka and nationwide delivery support with live tracking readiness." accent="rose" />
-        <ServiceCard icon={ShieldCheck} title={product.warranty} text="Original product with service-friendly support structure." accent="sky" />
-        <ServiceCard icon={Sparkles} title="Parent Approved" text="Curated for comfort, safety, and everyday baby use." accent="mint" />
-      </div>
-
       <ProductPurchasePanel product={product} />
-    </div>
-  );
-}
-
-function ServiceCard({
-  icon: Icon,
-  title,
-  text,
-  accent
-}: {
-  icon: typeof Truck;
-  title: string;
-  text: string;
-  accent: "rose" | "sky" | "mint";
-}) {
-  const accentClass =
-    accent === "rose"
-      ? "bg-[#FFF2F7] text-[#FF3366] border-[#FFD7E4]"
-      : accent === "sky"
-        ? "bg-[#EFF7FF] text-sky-700 border-sky-200"
-        : "bg-[#EEFFF8] text-emerald-700 border-emerald-200";
-
-  return (
-    <div className="rounded-[20px] border border-slate-200 bg-white p-4">
-      <div className={`grid h-10 w-10 place-items-center rounded-[14px] border ${accentClass}`}>
-        <Icon size={18} />
-      </div>
-      <div className="mt-3 text-sm font-bold text-slate-900">{title}</div>
-      <div className="mt-1 text-sm leading-6 text-slate-500">{text}</div>
     </div>
   );
 }

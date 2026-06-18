@@ -4,7 +4,6 @@ import type { Product } from "@/types/commerce";
 
 export function RatingBreakdown({ product }: { product: Product }) {
   const rows = buildBreakdown(product.rating, product.reviewCount);
-  const recommendationRate = Math.min(98, Math.max(84, Math.round(product.rating * 18)));
 
   return (
     <Card className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
@@ -22,10 +21,6 @@ export function RatingBreakdown({ product }: { product: Product }) {
             ))}
           </div>
         </div>
-        <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3 text-right">
-          <div className="text-lg font-black text-emerald-700">{recommendationRate}%</div>
-          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600">Would recommend</div>
-        </div>
       </div>
 
       <div className="mt-6 space-y-4">
@@ -40,20 +35,7 @@ export function RatingBreakdown({ product }: { product: Product }) {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
-        <MetricCard label="Verified reviews" value={product.reviewCount.toString()} />
-        <MetricCard label="Parent trust score" value={`${Math.min(99, Math.round(product.rating * 19))}%`} />
-      </div>
     </Card>
-  );
-}
-
-function MetricCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[16px] border border-slate-200 bg-slate-50 px-4 py-3">
-      <div className="text-xl font-black text-slate-900">{value}</div>
-      <div className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</div>
-    </div>
   );
 }
 

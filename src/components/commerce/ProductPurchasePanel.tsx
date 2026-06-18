@@ -59,7 +59,6 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
     <Card className="sticky top-28 rounded-[24px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)] sm:p-5">
       <div>
         <div className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Purchase Options</div>
-        <div className="mt-1 text-sm text-slate-600">Adjust quantity and choose your checkout action.</div>
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-[152px_1fr] xl:grid-cols-[152px_1fr_1fr]">
@@ -134,11 +133,6 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
           <Share2 size={16} />
           Share
         </Button>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-        <span>Original product support</span>
-        <span>Backend-ready for payment and fulfillment</span>
       </div>
     </Card>
   );
