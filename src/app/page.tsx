@@ -69,7 +69,7 @@ export default function HomePage() {
                 </div>
                 <div className="relative z-10 flex h-[12rem] flex-col justify-end sm:h-[14rem]">
                   <Button asChild variant="gold" className="h-11 w-fit rounded-md bg-[linear-gradient(120deg,#ffe8b1_10%,#f8d56c_100%)] px-5 text-[12px] font-semibold text-[#4a3a00] shadow-[0_16px_34px_rgba(248,189,80,0.35)] transition hover:text-[#4a3a00] hover:bg-[linear-gradient(120deg,#ffd96f,#f6d46f)] hover:shadow-[0_22px_40px_rgba(248,189,80,0.45)]">
-                    <Link href="/category/clothing">BUY NOW</Link>
+                    <Link href="/category/kids-dress">BUY NOW</Link>
                   </Button>
                 </div>
               </Card>
@@ -139,8 +139,8 @@ export default function HomePage() {
                 </p>
                 <h2 className="mt-2 text-xl sm:text-3xl font-bold text-white">Welcome to Baby Mart</h2>
                 <a
-                  href="/products"
-                  className="mt-4 inline-flex items-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#7c3aed] transition duration-200 ease-in-out hover:bg-violet-100"
+                  href="/shop"
+                  className="mt-4 inline-flex h-11 items-center rounded-md bg-[#FF3366] px-5 text-sm font-semibold text-white transition duration-200 ease-in-out hover:bg-[#07111F] hover:text-white"
                 >
                   Shop Now
                 </a>
@@ -179,7 +179,7 @@ export default function HomePage() {
                   Discover premium baby cribs, strollers, nursery furniture, and toys selected for maximum safety and comfort.
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-3">
-                  <Button asChild variant="gold" className="h-12 rounded-full px-6 !text-[#07111F]">
+                  <Button asChild variant="outline" className="h-12 rounded-md !border-transparent !bg-[#FF3366] px-6 !text-white hover:!bg-[#07111F] hover:!text-white">
                     <Link href="/shop">Explore Collection</Link>
                   </Button>
                   <div className="inline-flex items-center rounded-full border border-white/16 bg-white/8 px-4 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/88">

@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { LiveActivityPopup } from "@/components/layout/LiveActivityPopup";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Providers } from "@/providers/Providers";
+import { RouteScrollReset } from "@/components/layout/RouteScrollReset";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,8 +36,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body className="overflow-x-clip">
         <Providers>
+          <RouteScrollReset />
           <Header />
-          <main className="min-h-screen overflow-x-clip pt-[56px] pb-20 md:pt-[56px] lg:pt-[156px] md:pb-0">{children}</main>
+          <main className="min-h-screen overflow-x-clip pt-[56px] pb-20 md:pt-[56px] lg:pt-[169px] md:pb-0">{children}</main>
           <Footer />
           <MobileNav />
           <LiveActivityPopup />

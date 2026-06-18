@@ -39,7 +39,7 @@ export default async function SearchPage({
 
   const helperTags = query
     ? [query, ...matchingCategories.slice(0, 3).map((category) => category.name)]
-    : ["Diapers", "Baby Clothing", "Feeding Bottle", "Foldable Stroller"];
+    : ["Baby Food", "Kids Dress", "Frocks", "Pampers"];
 
   return (
     <Container className="py-8">
@@ -50,7 +50,7 @@ export default async function SearchPage({
           <Input
             name="q"
             defaultValue={query}
-            placeholder="Search diapers, baby clothing, feeding, strollers..."
+            placeholder="Search baby food, frocks, kids dress, pampers..."
             className="h-12 rounded-xl pl-10 pr-32"
           />
           <button
@@ -84,7 +84,7 @@ export default async function SearchPage({
           <Card className="p-8 text-center">
             <h2 className="text-xl font-semibold">No products found</h2>
             <p className="mt-2 text-sm text-slate-500">
-              Try a different spelling, browse categories, or search for diapers, clothing, toys, and strollers.
+              Try a different spelling, browse categories, or search for baby food, frocks, kids dress, pampers, shorts, or toys.
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               {categories.slice(0, 4).map((category) => (

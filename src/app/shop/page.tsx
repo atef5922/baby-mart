@@ -22,11 +22,6 @@ export default async function ShopPage({ searchParams }: { searchParams?: Promis
       <CatalogExplorer
         products={visibleProducts}
         title={activeBrand ? `${activeBrand} Products` : "All Products"}
-        subtitle={
-          activeBrand
-            ? `Browse verified ${activeBrand} products with live search, sorting, EMI-ready filtering, and backend-ready catalog behavior.`
-            : "Search, sort, and filter premium baby products with a production-ready shopping experience built for backend integration."
-        }
         initialBrand={activeBrand}
         productCardMode="home"
       />

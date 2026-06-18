@@ -18,7 +18,7 @@ export function BrandMarqueeSection() {
             Premium Brand Showcase
           </div>
           <div className="max-w-3xl">
-            <h2 className="text-[2rem] font-extrabold tracking-[-0.04em] text-[#07111F] sm:text-[2.5rem]">Trusted Baby Care Brands</h2>
+            <h2 className="bg-[linear-gradient(90deg,#ff5ca8,#ff8b2c,#ffd54a,#67d8b4,#5bb5ff,#a27dff)] bg-clip-text text-[2rem] font-extrabold tracking-[-0.04em] text-transparent sm:text-[2.5rem]">Trusted Baby Care Brands</h2>
           </div>
           <Link href="/brands" className="premium-hover inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-[#07111F] shadow-[0_12px_34px_rgba(7,17,31,0.06)] hover:-translate-y-1 hover:border-[#D4A853] hover:text-[#9a6d21]">
             View All <ArrowRight size={16} />

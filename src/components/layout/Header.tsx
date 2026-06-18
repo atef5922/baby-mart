@@ -50,6 +50,7 @@ export function Header() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [showHeaderGroupA, setShowHeaderGroupA] = useState(true);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLDivElement | null>(null);
   const pagesMenuRef = useRef<HTMLDivElement | null>(null);
@@ -69,7 +70,7 @@ export function Header() {
   const [userMenuStyle, setUserMenuStyle] = useState({ top: -9999, left: -9999 });
   const [searchMenuStyle, setSearchMenuStyle] = useState({ top: -9999, left: -9999, width: 0 });
   const SCROLL_THRESHOLD = 8;
-  const HEADER_GROUP_A_HEIGHT = 124;
+  const HEADER_GROUP_A_HEIGHT = 110;
 
   const suggestions = useMemo(() => {
     if (!query.trim()) return [];
@@ -98,18 +99,8 @@ export function Header() {
   useEffect(() => {
     const onScroll = () => {
       const currentY = window.scrollY;
-      const previousY = lastScrollY.current;
-      const scrollingDown = currentY > previousY;
-      const scrollDelta = Math.abs(currentY - previousY);
-      const hasScrolled = scrollDelta > SCROLL_THRESHOLD;
-
-      if (currentY <= 8) {
-        setShowHeaderGroupA(true);
-      } else if (scrollingDown && hasScrolled) {
-        setShowHeaderGroupA(false);
-      } else if (!scrollingDown && hasScrolled) {
-        setShowHeaderGroupA(true);
-      }
+      setHasScrolled(currentY > 8);
+      setShowHeaderGroupA(currentY <= SCROLL_THRESHOLD);
 
       lastScrollY.current = currentY;
 
@@ -132,19 +123,16 @@ export function Header() {
     const hasNestedMatch =
       href !== "/" &&
       (pathname.startsWith(`${href}/`) ||
-        (href === "/kids" && pathname.startsWith("/category/diapers")) ||
-        (href === "/frocks" && pathname.startsWith("/category/clothing/frocks")) ||
-        (href === "/shorts" && pathname.startsWith("/category/clothing/shorts")) ||
+        (href === "/kids" && ["/category/frocks", "/category/kids-dress", "/category/shorts", "/category/toys"].some((categoryPath) => pathname.startsWith(categoryPath))) ||
+        (href === "/frocks" && pathname.startsWith("/category/frocks")) ||
+        (href === "/shorts" && pathname.startsWith("/category/shorts")) ||
         (href === "/about-us" && pagesPathnames.some((entry) => pathname === entry || pathname.startsWith(`${entry}/`))) ||
         (href === "/collection" && pathname.startsWith("/collection/")));
 
     return hasNestedMatch;
   };
 
-  const activeNavLabel = useMemo(
-    () => mainNavItems.find((item) => isNavActive(item.href))?.label ?? null,
-    [pathname]
-  );
+  const activeNavLabel = mainNavItems.find((item) => isNavActive(item.href))?.label ?? null;
 
   if (process.env.NODE_ENV === "development") {
     console.debug("Header path:", pathname, "activeNav:", activeNavLabel);
@@ -155,6 +143,9 @@ export function Header() {
     setUserOpen(false);
     setCategorySidebarOpen(false);
     setIsPagesMenuOpen(false);
+    setShowHeaderGroupA(true);
+    setHasScrolled(false);
+    lastScrollY.current = 0;
   }, [pathname, closeCartDrawer]);
 
   useEffect(() => {
@@ -242,7 +233,7 @@ export function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-60">
       <div
-        className={`fixed inset-x-0 top-0 z-50 h-[124px] overflow-visible bg-white transition-[transform,opacity] duration-[300ms] ease-in-out ${showHeaderGroupA ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none"}`}
+        className={`fixed inset-x-0 top-0 z-50 h-[110px] overflow-visible bg-white transition-[transform,opacity] duration-[300ms] ease-in-out ${showHeaderGroupA ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none"}`}
       >
         <div className="h-[34px] overflow-hidden border-b border-white/20 bg-[linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,77,109,0.95))] text-white backdrop-blur-[10px]">
           <Container className="flex h-full items-center justify-between gap-4 px-4 text-[12px] font-normal leading-none">
@@ -283,10 +274,10 @@ export function Header() {
 
         <div className="relative z-50 bg-white">
           <div className="border-b border-[#e5e7eb] bg-white shadow-[0_8px_26px_rgba(0,0,0,0.05)]">
-          <Container className="h-[90px] px-4">
+          <Container className="h-[76px] px-4">
           <div className="flex h-full items-center gap-4">
             <Link href="/" className="flex items-center gap-3 pl-5">
-              <Image src={newArrivalsLogo} alt="Baby Mart logo" width={320} height={96} className="h-[84px] w-auto object-contain sm:h-[84px] xl:h-[90px]" priority />
+              <Image src={newArrivalsLogo} alt="Baby Mart logo" width={320} height={96} className="h-[68px] w-auto object-contain sm:h-[70px] xl:h-[74px]" priority />
             </Link>
 
             <div className="mx-4 hidden flex-1 items-center justify-center md:flex">
@@ -359,22 +350,29 @@ export function Header() {
                   <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
                 </div>
 
-                <Link href="/wishlist" className="group relative inline-flex h-10 w-10 items-center justify-center text-[#111827] transition duration-200 ease-in-out hover:scale-105 hover:text-[#ff2d55]">
-                  <Heart size={18} className="transition duration-200 ease-in-out group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,45,85,0.42)]" />
+                <Link href="/wishlist" aria-label="Wishlist" title="Wishlist" className="group/icon relative inline-flex h-10 w-10 items-center justify-center rounded-md text-[#111827] transition duration-200 ease-in-out hover:scale-105 hover:bg-[#fff1f3] hover:text-[#ff2d55]">
+                  <Heart size={18} className="transition duration-200 ease-in-out group-hover/icon:scale-110 group-hover/icon:fill-[#ff2d55] group-hover/icon:drop-shadow-[0_0_12px_rgba(255,45,85,0.42)]" />
                   {wishlistCount > 0 ? (
                     <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-[#ff2d55] px-1 text-center text-[10px] font-bold text-white">{wishlistCount}</span>
                   ) : null}
+                  <span className="pointer-events-none absolute bottom-full left-1/2 z-[120] mb-2 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#07111F] px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-[0_12px_30px_rgba(7,17,31,0.2)] transition duration-200 group-hover/icon:opacity-100">
+                    Wishlist
+                  </span>
                 </Link>
 
                 <button
                   onClick={openCartDrawer}
-                  className="group relative inline-flex h-10 w-10 items-center justify-center text-[#111827] transition duration-200 ease-in-out hover:scale-105 hover:text-[#ff2d55]"
+                  title="Cart"
+                  className="group/icon relative inline-flex h-10 w-10 items-center justify-center rounded-md text-[#111827] transition duration-200 ease-in-out hover:scale-105 hover:bg-[#fff1f3] hover:text-[#ff2d55]"
                   aria-label="Open cart"
                 >
-                  <ShoppingCart size={18} className="transition duration-200 ease-in-out group-hover:scale-105 group-hover:drop-shadow-[0_0_12px_rgba(255,45,85,0.42)]" />
+                  <ShoppingCart size={18} className="transition duration-200 ease-in-out group-hover/icon:scale-110 group-hover/icon:drop-shadow-[0_0_12px_rgba(255,45,85,0.42)]" />
                   {count > 0 && (
                     <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-[#ff2d55] px-1 text-center text-[10px] font-bold text-white">{count}</span>
                   )}
+                  <span className="pointer-events-none absolute bottom-full left-1/2 z-[120] mb-2 -translate-x-1/2 whitespace-nowrap rounded-[4px] bg-[#07111F] px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-[0_12px_30px_rgba(7,17,31,0.2)] transition duration-200 group-hover/icon:opacity-100">
+                    Cart
+                  </span>
                 </button>
               </div>
             </div>
@@ -411,11 +409,10 @@ export function Header() {
                     <div
                       key={item.label}
                       ref={pagesMenuRef}
-                      className="relative"
+                      className="group/pages relative"
                       onMouseEnter={() => setIsPagesMenuOpen(true)}
                       onMouseLeave={() => setIsPagesMenuOpen(false)}
                       onFocus={() => setIsPagesMenuOpen(true)}
-                      onBlur={() => setIsPagesMenuOpen(false)}
                     >
                       <button
                         type="button"
@@ -441,13 +438,13 @@ export function Header() {
                             aria-hidden="true"
                           />
                         </span>
-                        <ChevronDown size={12} className={`ml-1 transition-transform duration-200 ${isPagesMenuOpen ? "rotate-180" : ""}`} />
+                        <ChevronDown size={12} className={`ml-1 transition-transform duration-200 group-hover/pages:rotate-180 ${isPagesMenuOpen ? "rotate-180" : ""}`} />
                       </button>
                       <div
                         id="pages-submenu"
                         role="menu"
-                        className={`pointer-events-none absolute left-0 top-full z-20 flex w-max flex-col space-y-1 rounded-lg border border-slate-200 bg-white px-1 py-1 shadow-[0_4px_8px_rgba(0,0,0,0.1)] transition-all duration-180 ease-in-out ${
-                          isPagesMenuOpen ? "pointer-events-auto opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
+                        className={`pointer-events-none absolute left-1/2 top-full z-[90] mt-0 flex w-[220px] -translate-x-1/2 flex-col rounded-xl border border-slate-200/80 bg-white p-2 opacity-0 shadow-[0_18px_54px_rgba(7,17,31,0.16)] ring-1 ring-white/70 transition-all duration-200 ease-in-out group-hover/pages:pointer-events-auto group-hover/pages:translate-y-0 group-hover/pages:opacity-100 group-focus-within/pages:pointer-events-auto group-focus-within/pages:translate-y-0 group-focus-within/pages:opacity-100 ${
+                          isPagesMenuOpen ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-1"
                         }`}
                       >
                         {pageSubmenuItems.map((subItem) => (
@@ -456,9 +453,10 @@ export function Header() {
                             href={subItem.href}
                             role="menuitem"
                             onClick={() => setIsPagesMenuOpen(false)}
-                            className="whitespace-nowrap rounded-md px-4 py-2 text-sm font-semibold text-[#111827] transition-colors duration-180 ease-in-out hover:text-[#ff2d55]"
+                            className="group/item flex items-center justify-between whitespace-nowrap rounded-lg px-4 py-3 text-sm font-semibold text-[#111827] transition duration-200 ease-in-out hover:bg-[#fff1f3] hover:text-[#ff2d55] focus-visible:bg-[#fff1f3] focus-visible:text-[#ff2d55] focus-visible:outline-none"
                           >
-                            {subItem.label}
+                            <span>{subItem.label}</span>
+                            <ChevronDown size={14} className="-rotate-90 text-slate-300 transition duration-200 group-hover/item:translate-x-0.5 group-hover/item:text-[#ff2d55]" />
                           </Link>
                         ))}
                       </div>
@@ -486,6 +484,12 @@ export function Header() {
             </div>
           </nav>
         </Container>
+        <div
+          className={`h-[2px] w-full bg-gradient-to-r from-[#ff2d55] via-[#ff9f43] via-[#ad5dff] to-[#3b82f6] shadow-[0_0_6px_rgba(255,45,85,0.35)] transition-opacity duration-200 ${
+            hasScrolled ? "opacity-100" : "opacity-0"
+          }`}
+          aria-hidden="true"
+        />
       </div>
       {isClient && userOpen &&
         createPortal(

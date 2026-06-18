@@ -3,7 +3,7 @@ import { Award, CreditCard, Headphones, RotateCcw, ShieldCheck, Truck } from "lu
 export const navItems = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Categories", href: "/category/diapers" },
+  { label: "Categories", href: "/category/baby-products" },
   { label: "Baby Brands", href: "/brands" },
   { label: "Deals", href: "/deals" },
   { label: "Parenting Guide", href: "/blog" },

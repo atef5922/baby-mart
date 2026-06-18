@@ -8,8 +8,6 @@ export const metadata = {
   description: "Dedicated collection of baby and kids frocks with filters and sorting."
 };
 
-const hasFrockTag = (value: string) => ["frock", "frocks", "frocks set", "frock set"].includes(value);
-
 export default async function FrocksPage({
   searchParams
 }: {
@@ -20,19 +18,15 @@ export default async function FrocksPage({
   const activeBrandMeta = babyBrands.find((brand) => brand.slug === activeBrandSlug);
   const activeBrand = activeBrandMeta?.name ?? "";
 
-  const visibleProducts = products.filter((product) => {
-    const tags = product.tags.map((tag) => tag.toLowerCase());
-    const matchesType = tags.some((tag) => hasFrockTag(tag)) || product.name.toLowerCase().includes("frock");
-    const matchesBrand = !activeBrand || product.brand.toLowerCase() === activeBrand.toLowerCase();
-    return matchesType && matchesBrand;
-  });
+  const visibleProducts = products.filter(
+    (product) => product.category === "frocks" && (!activeBrand || product.brand.toLowerCase() === activeBrand.toLowerCase())
+  );
 
   return (
     <Container className="py-8">
       <CatalogExplorer
         products={visibleProducts}
         title="Frocks"
-        subtitle="Browse soft and stylish baby frocks with full shop-style search, sorting, and filter behavior."
         initialBrand={activeBrand}
         productCardMode="home"
       />

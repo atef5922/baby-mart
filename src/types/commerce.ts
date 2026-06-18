@@ -1,16 +1,12 @@
 export type CategorySlug =
-  | "diapers"
-  | "feeding"
-  | "strollers"
-  | "toys"
-  | "clothing"
-  | "baby-gear"
-  | "nursing"
-  | "bath-care"
-  | "nursery-furniture"
-  | "safety"
-  | "bedding"
-  | "learning";
+  | "baby-food"
+  | "baby-products"
+  | "baby-skin-care"
+  | "frocks"
+  | "kids-dress"
+  | "pampers"
+  | "shorts"
+  | "toys";
 
 export interface Category {
   slug: CategorySlug;
@@ -37,6 +33,7 @@ export interface Product {
   badge?: string;
   image: string;
   gallery: string[];
+  colorVariants?: string[];
   features: string[];
   specifications: Record<string, string>;
   tags: string[];

@@ -8,7 +8,7 @@ export const metadata = {
   description: "Curated kids baby products with live search, sorting, and filter behavior like shop."
 };
 
-const kidsCategorySlugs = ["diapers", "clothing", "feeding", "toys", "safety", "baby-gear", "bath-care", "learning", "nursery-furniture", "bedding"];
+const kidsCategorySlugs = ["frocks", "kids-dress", "shorts", "toys"];
 
 export default async function KidsPage({
   searchParams
@@ -29,7 +29,6 @@ export default async function KidsPage({
       <CatalogExplorer
         products={visibleProducts}
         title="Kids Collection"
-        subtitle="Shop baby and kids essentials in one place with live filters, sorting, and brand-aware selection."
         initialBrand={activeBrand}
         productCardMode="home"
       />

@@ -57,7 +57,7 @@ export function ReviewsSection() {
           <div className="inline-flex items-center text-[11px] font-black uppercase tracking-[0.24em] text-[#C8922D]">
             Customer Reviews
           </div>
-          <h2 className="mt-3 text-3xl font-black leading-tight tracking-[-0.04em] text-[#07111F] sm:text-4xl lg:text-[2.75rem]">
+          <h2 className="mt-3 bg-[linear-gradient(90deg,#ff5ca8,#ff8b2c,#ffd54a,#67d8b4,#5bb5ff,#a27dff)] bg-clip-text text-3xl font-black leading-tight tracking-[-0.04em] text-transparent sm:text-4xl lg:text-[2.75rem]">
             Trusted by Parents Across Bangladesh
           </h2>
         </motion.div>

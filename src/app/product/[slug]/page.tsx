@@ -36,8 +36,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <Card className="order-1 relative min-h-[520px] overflow-hidden md:order-2">
             <Image src={product.image} alt={product.name} fill className="object-cover transition duration-700 hover:scale-105" priority />
             <div className="absolute left-5 top-5 flex gap-2">
-              <Badge className="border-red-200 bg-red-50 text-red-600">-{product.discount}%</Badge>
-              <Badge>{product.badge}</Badge>
+              {product.discount ? <Badge className="border-red-200 bg-red-50 text-red-600">-{product.discount}%</Badge> : null}
+              {product.badge ? <Badge>{product.badge}</Badge> : null}
             </div>
             <div className="absolute bottom-5 left-5 flex gap-2">
               <Button variant="outline"><Video size={16} /> Video Preview</Button>
@@ -60,7 +60,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <div className="text-4xl font-black text-[#07111F]">{formatPrice(product.price)}</div>
             {product.oldPrice ? <div className="text-lg text-slate-400 line-through">{formatPrice(product.oldPrice)}</div> : null}
           </div>
-          <div className="mt-2 text-sm font-semibold text-green-600">You save {formatPrice((product.oldPrice || product.price) - product.price)} ({product.discount}%)</div>
+          {product.oldPrice && product.discount ? (
+            <div className="mt-2 text-sm font-semibold text-green-600">You save {formatPrice(product.oldPrice - product.price)} ({product.discount}%)</div>
+          ) : null}
           <div className="mt-6 grid gap-3">
             {product.features.map((feature) => (
               <div key={feature} className="flex items-center gap-3 text-sm">

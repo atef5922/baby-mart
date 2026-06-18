@@ -39,7 +39,9 @@ export function LiveActivityPopup() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const dismissed = window.localStorage.getItem("babymart-live-activity-popup-dismissed") === "1";
-    setIsDismissed(dismissed);
+    const timer = window.setTimeout(() => setIsDismissed(dismissed), 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -101,7 +103,7 @@ export function LiveActivityPopup() {
                 </Link>
                 <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                   <span>{active.ago}</span>
-                  <span>•</span>
+                  <span>&bull;</span>
                   <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
                     <CheckCircle2 size={13} />
                     Verified

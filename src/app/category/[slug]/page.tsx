@@ -31,8 +31,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         <CatalogExplorer
           products={items.length ? items : getProducts().slice(0, 4)}
           title={`Featured ${category.name}`}
-          subtitle="Search, sort, and refine this category with live filters while keeping the buying flow premium and backend-ready."
+          subtitle="Search, sort, and refine this category while keeping the Baby Mart buying flow premium and fast."
           lockedCategory={category.slug}
+          productCardMode="home"
         />
       </div>
       <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -44,7 +45,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
           <h2 className="text-2xl font-semibold">Category FAQ</h2>
           <details className="mt-4 rounded-md border border-slate-200 p-4">
             <summary className="cursor-pointer font-semibold">How do I choose the right {category.name.toLowerCase()}?</summary>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Compare capacity, power use, warranty, installation needs, and verified reviews before checkout.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Compare sizing, materials, care instructions, stock status, and verified reviews before checkout.</p>
           </details>
         </Card>
       </div>

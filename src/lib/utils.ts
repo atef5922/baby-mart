@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatPrice(value: number) {
   return `Tk ${new Intl.NumberFormat("en-BD", {
-    maximumFractionDigits: 0
+    maximumFractionDigits: 2
   }).format(value)}`;
 }
 

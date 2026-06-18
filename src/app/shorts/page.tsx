@@ -8,8 +8,6 @@ export const metadata = {
   description: "Dedicated shorts selection with shop-like filtering and sorting."
 };
 
-const hasShortsTag = (value: string) => ["shorts", "short", "shorts set", "short set"].includes(value);
-
 export default async function ShortsPage({
   searchParams
 }: {
@@ -20,19 +18,15 @@ export default async function ShortsPage({
   const activeBrandMeta = babyBrands.find((brand) => brand.slug === activeBrandSlug);
   const activeBrand = activeBrandMeta?.name ?? "";
 
-  const visibleProducts = products.filter((product) => {
-    const tags = product.tags.map((tag) => tag.toLowerCase());
-    const matchesType = tags.some((tag) => hasShortsTag(tag)) || product.name.toLowerCase().includes("short");
-    const matchesBrand = !activeBrand || product.brand.toLowerCase() === activeBrand.toLowerCase();
-    return matchesType && matchesBrand;
-  });
+  const visibleProducts = products.filter(
+    (product) => product.category === "shorts" && (!activeBrand || product.brand.toLowerCase() === activeBrand.toLowerCase())
+  );
 
   return (
     <Container className="py-8">
       <CatalogExplorer
         products={visibleProducts}
         title="Shorts"
-        subtitle="Explore practical baby shorts collections with search, sort, and category-level filtering."
         initialBrand={activeBrand}
         productCardMode="home"
       />

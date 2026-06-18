@@ -17,16 +17,16 @@ export default async function CollectionPage({
   const activeBrandSlug = params?.brand ? decodeURIComponent(params.brand).toLowerCase() : "";
   const activeBrandMeta = babyBrands.find((brand) => brand.slug === activeBrandSlug);
   const activeBrand = activeBrandMeta?.name ?? "";
+  const highlightedProducts = products.filter((product) => product.isBestSeller || product.tags.includes("highlighted") || product.tags.includes("crazy-collection"));
   const visibleProducts = activeBrand
-    ? products.filter((product) => product.brand.toLowerCase() === activeBrand.toLowerCase())
-    : products;
+    ? highlightedProducts.filter((product) => product.brand.toLowerCase() === activeBrand.toLowerCase())
+    : highlightedProducts;
 
   return (
     <Container className="py-8">
       <CatalogExplorer
         products={visibleProducts}
         title="Collection"
-        subtitle="Browse collection products with live filters, sorting, and search exactly like shop." 
         initialBrand={activeBrand}
         productCardMode="home"
       />
