@@ -1,4 +1,4 @@
-import { Check, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { ProductPurchasePanel } from "@/components/commerce/ProductPurchasePanel";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
@@ -59,19 +59,6 @@ export function ProductInfoPanel({ product }: { product: Product }) {
           </div>
         ) : null}
 
-        <div className="mt-5">
-          <div className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Why parents pick this</div>
-          <div className="mt-3 grid gap-3">
-            {product.features.slice(0, 5).map((feature) => (
-              <div key={feature} className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-                <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#FFF1F6] text-[#FF3366]">
-                  <Check size={12} />
-                </span>
-                <span>{feature}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       <ProductPurchasePanel product={product} />
