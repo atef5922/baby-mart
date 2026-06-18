@@ -10,7 +10,7 @@ export function ProductGrid({
   compact?: boolean;
   cardVariant?: "default" | "home";
 }) {
-  const gridClass = cardVariant === "home" ? "grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4" : "grid-cols-2 gap-3.5 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:gap-5 2xl:grid-cols-5";
+  const gridClass = cardVariant === "home" ? "grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4" : "grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:gap-5";
 
   return (
     <div className={`grid ${gridClass}`}>

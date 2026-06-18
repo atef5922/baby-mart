@@ -57,6 +57,13 @@ export function DropdownSelect({
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setOpen((current) => !current)}
+        onKeyDown={(event) => {
+          if (disabled) return;
+          if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setOpen(true);
+          }
+        }}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listboxId}
@@ -73,7 +80,7 @@ export function DropdownSelect({
         <div
           id={listboxId}
           role="listbox"
-          className="absolute left-0 top-full z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-md border border-slate-200 bg-white py-1 shadow-[0_18px_44px_rgba(7,17,31,0.12)]"
+          className="absolute left-0 top-full z-50 mt-2 max-h-64 w-full min-w-full origin-top overflow-y-auto rounded-md border border-slate-200 bg-white py-1 shadow-[0_18px_44px_rgba(7,17,31,0.12)]"
         >
           <button
             type="button"

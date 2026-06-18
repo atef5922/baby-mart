@@ -1,7 +1,7 @@
 "use client";
 
 import { Grid2X2, List, SlidersHorizontal, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/types/commerce";
 import { DropdownSelect } from "@/components/commerce/DropdownSelect";
 import { Filters, defaultFilterState, type FilterState } from "@/components/commerce/Filters";
@@ -84,6 +84,23 @@ export function CatalogExplorer({
   const currentPage = Math.min(page, totalPages);
   const paginatedProducts = visibleProducts.slice((currentPage - 1) * PRODUCTS_PER_PAGE, currentPage * PRODUCTS_PER_PAGE);
 
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileFiltersOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileFiltersOpen]);
+
   const resetAll = () => {
     setQuery("");
     setSort("popular");
@@ -150,7 +167,7 @@ export function CatalogExplorer({
               <Button variant="outline" size="icon" className="rounded-md" aria-label="List view"><List size={18} /></Button>
             </div>
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-[1fr_180px_180px_180px]">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_180px_180px_180px]">
             <Input value={query} onChange={(event) => {
               setQuery(event.target.value);
               setPage(1);
@@ -168,7 +185,7 @@ export function CatalogExplorer({
         </div>
       )}
 
-      <div className={`${hideToolbar ? "" : "mt-6"} grid gap-6 lg:grid-cols-[280px_1fr]`}>
+      <div className={`${hideToolbar ? "" : "mt-6"} grid gap-6 lg:grid-cols-[260px_1fr] xl:grid-cols-[280px_1fr]`}>
         <aside className="hidden lg:block">
           <Filters value={filters} onChange={updateFilters} onReset={resetAll} />
         </aside>
@@ -194,7 +211,7 @@ export function CatalogExplorer({
 
       {mobileFiltersOpen && (
         <div className="fixed inset-0 z-[80] bg-[#07111F]/45 p-4 backdrop-blur-sm lg:hidden" onClick={() => setMobileFiltersOpen(false)}>
-          <div className="mx-auto mt-10 max-w-md rounded-[24px] bg-white p-4 shadow-[0_28px_90px_rgba(7,17,31,0.28)]" onClick={(event) => event.stopPropagation()}>
+          <div className="mx-auto mt-10 max-h-[calc(100vh-5rem)] max-w-md overflow-y-auto rounded-[24px] bg-white p-4 shadow-[0_28px_90px_rgba(7,17,31,0.28)]" onClick={(event) => event.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
               <div className="text-lg font-semibold">Mobile Filters</div>
               <button onClick={() => setMobileFiltersOpen(false)} className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200"><X size={18} /></button>

@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#07111F] text-white">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#EF8A9B] to-transparent" />
-      <Container className="grid gap-8 py-12 pt-12 md:grid-cols-[1.35fr_0.9fr_0.9fr_0.9fr_1.25fr]">
+      <Container className="grid gap-8 py-12 pt-12 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.9fr_0.9fr_0.9fr_1.25fr]">
         <div>
           <Image src={newArrivalsLogo} alt="Baby Mart logo" width={320} height={96} className="h-[70px] w-auto object-contain" />
           <p className="mt-5 max-w-sm text-sm leading-7 text-slate-300">
@@ -57,9 +57,9 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-[#EF8A9B]">Stay Updated</h3>
           <p className="mt-4 text-sm leading-6 text-slate-300">Get baby discounts, new arrivals, and parenting guides.</p>
-          <form action="/contact" className="mt-4 flex gap-2">
+          <form action="/contact" className="mt-4 flex flex-col gap-2 xl:flex-row">
             <Input name="email" type="email" required placeholder="Email address" className="border-white/10 bg-white/10 text-white placeholder:text-slate-400" />
-            <Button type="submit" variant="outline" className="rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-[#07111F] hover:!text-white">Join</Button>
+            <Button type="submit" variant="outline" className="rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-black hover:!text-white">Join</Button>
           </form>
           <div className="mt-5 grid gap-2 text-sm text-slate-300">
             <span className="flex items-center gap-2"><MapPin size={16} /> Gulshan, Dhaka</span>

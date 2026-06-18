@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Heart, Mail, Menu, Phone, Search, ShoppingCart, UserRound, WalletCards, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
@@ -52,8 +52,10 @@ export function Header() {
   const [showHeaderGroupA, setShowHeaderGroupA] = useState(true);
   const [hasScrolled, setHasScrolled] = useState(false);
   const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(false);
+  const [mobilePagesOpen, setMobilePagesOpen] = useState(false);
   const searchInputRef = useRef<HTMLDivElement | null>(null);
   const pagesMenuRef = useRef<HTMLDivElement | null>(null);
+  const pagesCloseTimerRef = useRef<number | null>(null);
   const pathname = usePathname();
   const router = useRouter();
   const lines = useCartStore((state) => state.lines);
@@ -70,7 +72,27 @@ export function Header() {
   const [userMenuStyle, setUserMenuStyle] = useState({ top: -9999, left: -9999 });
   const [searchMenuStyle, setSearchMenuStyle] = useState({ top: -9999, left: -9999, width: 0 });
   const SCROLL_THRESHOLD = 8;
-  const HEADER_GROUP_A_HEIGHT = 110;
+
+  const clearPagesCloseTimer = useCallback(() => {
+    if (!pagesCloseTimerRef.current) return;
+    window.clearTimeout(pagesCloseTimerRef.current);
+    pagesCloseTimerRef.current = null;
+  }, []);
+
+  const openPagesMenu = useCallback(() => {
+    clearPagesCloseTimer();
+    setIsPagesMenuOpen(true);
+  }, [clearPagesCloseTimer]);
+
+  const closePagesMenu = useCallback(() => {
+    clearPagesCloseTimer();
+    setIsPagesMenuOpen(false);
+  }, [clearPagesCloseTimer]);
+
+  const schedulePagesMenuClose = useCallback(() => {
+    clearPagesCloseTimer();
+    pagesCloseTimerRef.current = window.setTimeout(() => setIsPagesMenuOpen(false), 120);
+  }, [clearPagesCloseTimer]);
 
   const suggestions = useMemo(() => {
     if (!query.trim()) return [];
@@ -134,15 +156,12 @@ export function Header() {
 
   const activeNavLabel = mainNavItems.find((item) => isNavActive(item.href))?.label ?? null;
 
-  if (process.env.NODE_ENV === "development") {
-    console.debug("Header path:", pathname, "activeNav:", activeNavLabel);
-  }
-
   useEffect(() => {
     closeCartDrawer();
     setUserOpen(false);
     setCategorySidebarOpen(false);
     setIsPagesMenuOpen(false);
+    setMobilePagesOpen(false);
     setShowHeaderGroupA(true);
     setHasScrolled(false);
     lastScrollY.current = 0;
@@ -171,6 +190,45 @@ export function Header() {
       document.body.style.overflow = previousOverflow;
     };
   }, [cartOpen]);
+
+  useEffect(() => {
+    if (!categorySidebarOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCategorySidebarOpen(false);
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [categorySidebarOpen]);
+
+  useEffect(() => {
+    if (!isPagesMenuOpen) return;
+
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (pagesMenuRef.current?.contains(target)) return;
+      closePagesMenu();
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closePagesMenu();
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isPagesMenuOpen, closePagesMenu]);
 
   useEffect(() => {
     if (!userOpen) return;
@@ -231,9 +289,9 @@ export function Header() {
   }, [isClient, query, searchFocused]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-60">
+    <header className="fixed inset-x-0 top-0 z-[60]">
       <div
-        className={`fixed inset-x-0 top-0 z-50 h-[110px] overflow-visible bg-white transition-[transform,opacity] duration-[300ms] ease-in-out ${showHeaderGroupA ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none"}`}
+        className={`fixed inset-x-0 top-0 z-50 hidden h-[110px] overflow-visible bg-white transition-[transform,opacity] duration-[300ms] ease-in-out lg:block ${showHeaderGroupA ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none"}`}
       >
         <div className="h-[34px] overflow-hidden border-b border-white/20 bg-[linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,77,109,0.95))] text-white backdrop-blur-[10px]">
           <Container className="flex h-full items-center justify-between gap-4 px-4 text-[12px] font-normal leading-none">
@@ -383,13 +441,52 @@ export function Header() {
       </div>
 
       <div
-        className="fixed inset-x-0 z-60 bg-white transition-[top] duration-[300ms] ease-in-out"
-        style={{ top: showHeaderGroupA ? `${HEADER_GROUP_A_HEIGHT}px` : "0px" }}
+        className={`fixed inset-x-0 z-[60] bg-white transition-[top] duration-[300ms] ease-in-out ${showHeaderGroupA ? "top-0 lg:top-[110px]" : "top-0"}`}
       >
         <div className="h-[2px] w-full bg-gradient-to-r from-[#ff2d55] via-[#ff9f43] via-[#ad5dff] to-[#3b82f6] shadow-[0_0_2px_rgba(255,45,85,0.35)]" />
-          <Container className="flex h-[55px] items-center px-4">
+          <Container className="flex h-[56px] items-center px-4 lg:h-[55px]">
+            <div className="flex w-full items-center justify-between gap-2 lg:hidden">
+              <Link href="/" className="flex min-w-0 items-center">
+                <Image src={newArrivalsLogo} alt="Baby Mart logo" width={190} height={58} className="h-12 w-auto max-w-[150px] object-contain" priority />
+              </Link>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  aria-label="Open mobile menu"
+                  onClick={() => setCategorySidebarOpen(true)}
+                  className="grid h-10 w-10 place-items-center rounded-md border border-slate-200 bg-white text-[#111827] transition hover:border-[#ff2d55] hover:text-[#ff2d55]"
+                >
+                  <Search size={17} />
+                </button>
+                <Link
+                  href="/wishlist"
+                  aria-label="Wishlist"
+                  className="relative grid h-10 w-10 place-items-center rounded-md border border-slate-200 bg-white text-[#111827] transition hover:border-[#ff2d55] hover:text-[#ff2d55]"
+                >
+                  <Heart size={17} />
+                  {wishlistCount > 0 ? <span className="absolute -right-1.5 -top-1.5 min-w-5 rounded-full bg-[#ff2d55] px-1 text-center text-[10px] font-bold text-white">{wishlistCount}</span> : null}
+                </Link>
+                <button
+                  type="button"
+                  onClick={openCartDrawer}
+                  aria-label="Open cart"
+                  className="relative grid h-10 w-10 place-items-center rounded-md border border-slate-200 bg-white text-[#111827] transition hover:border-[#ff2d55] hover:text-[#ff2d55]"
+                >
+                  <ShoppingCart size={17} />
+                  {count > 0 ? <span className="absolute -right-1.5 -top-1.5 min-w-5 rounded-full bg-[#ff2d55] px-1 text-center text-[10px] font-bold text-white">{count}</span> : null}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Open menu"
+                  onClick={() => setCategorySidebarOpen(true)}
+                  className="grid h-10 w-10 place-items-center rounded-md bg-[#ff2d55] text-white transition hover:bg-[#07111F]"
+                >
+                  <Menu size={18} />
+                </button>
+              </div>
+            </div>
               <button
-                className="group relative mr-4 inline-flex h-11 items-center gap-2 rounded-[6px] bg-transparent px-4 text-sm font-medium text-[#111827] transition duration-200 ease-in-out hover:bg-[#fff1f3]"
+                className="group relative mr-4 hidden h-11 items-center gap-2 rounded-[6px] bg-transparent px-4 text-sm font-medium text-[#111827] transition duration-200 ease-in-out hover:bg-[#fff1f3] lg:inline-flex"
                 onClick={() => {
                 setCategorySidebarOpen(true);
             }}
@@ -399,7 +496,7 @@ export function Header() {
               <span>All Categories</span>
             </button>
 
-    <nav className="relative flex min-h-full flex-1 items-center justify-center overflow-visible">
+    <nav className="relative hidden min-h-full flex-1 items-center justify-center overflow-visible lg:flex">
             <div className="mx-auto flex flex-wrap items-center justify-center gap-6 font-medium leading-none sm:gap-7">
                   {mainNavItems.map((item) => {
                 const active = item.label === activeNavLabel;
@@ -410,18 +507,22 @@ export function Header() {
                       key={item.label}
                       ref={pagesMenuRef}
                       className="group/pages relative"
-                      onMouseEnter={() => setIsPagesMenuOpen(true)}
-                      onMouseLeave={() => setIsPagesMenuOpen(false)}
-                      onFocus={() => setIsPagesMenuOpen(true)}
+                      onMouseEnter={openPagesMenu}
+                      onMouseLeave={schedulePagesMenuClose}
+                      onFocus={openPagesMenu}
+                      onBlur={(event) => {
+                        if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+                        schedulePagesMenuClose();
+                      }}
                     >
                       <button
                         type="button"
                         className={`group inline-flex h-11 cursor-pointer items-center whitespace-nowrap text-sm uppercase tracking-[0.05em] leading-none transition-colors duration-200 ease-in-out hover:text-[#ff2d55] ${isPagesActive ? "font-semibold text-[#ff2d55]" : "font-medium text-[#111827]"}`}
                         onClick={() => setIsPagesMenuOpen((open) => !open)}
-                        onPointerEnter={() => setIsPagesMenuOpen(true)}
+                        onPointerEnter={openPagesMenu}
                         onKeyDown={(event) => {
                           if (event.key === "Escape") {
-                            setIsPagesMenuOpen(false);
+                            closePagesMenu();
                           } else if (event.key === "Enter" || event.key === " ") {
                             event.preventDefault();
                             setIsPagesMenuOpen((open) => !open);
@@ -443,8 +544,8 @@ export function Header() {
                       <div
                         id="pages-submenu"
                         role="menu"
-                        className={`pointer-events-none absolute left-1/2 top-full z-[90] mt-0 flex w-[220px] -translate-x-1/2 flex-col rounded-xl border border-slate-200/80 bg-white p-2 opacity-0 shadow-[0_18px_54px_rgba(7,17,31,0.16)] ring-1 ring-white/70 transition-all duration-200 ease-in-out group-hover/pages:pointer-events-auto group-hover/pages:translate-y-0 group-hover/pages:opacity-100 group-focus-within/pages:pointer-events-auto group-focus-within/pages:translate-y-0 group-focus-within/pages:opacity-100 ${
-                          isPagesMenuOpen ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-1"
+                        className={`absolute left-1/2 top-full z-[90] mt-0 flex w-[220px] -translate-x-1/2 flex-col rounded-xl border border-slate-200/80 bg-white p-2 shadow-[0_18px_54px_rgba(7,17,31,0.16)] ring-1 ring-white/70 transition-all duration-200 ease-in-out ${
+                          isPagesMenuOpen ? "pointer-events-auto translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"
                         }`}
                       >
                         {pageSubmenuItems.map((subItem) => (
@@ -452,7 +553,7 @@ export function Header() {
                             key={subItem.href}
                             href={subItem.href}
                             role="menuitem"
-                            onClick={() => setIsPagesMenuOpen(false)}
+                            onClick={closePagesMenu}
                             className="group/item flex items-center justify-between whitespace-nowrap rounded-lg px-4 py-3 text-sm font-semibold text-[#111827] transition duration-200 ease-in-out hover:bg-[#fff1f3] hover:text-[#ff2d55] focus-visible:bg-[#fff1f3] focus-visible:text-[#ff2d55] focus-visible:outline-none"
                           >
                             <span>{subItem.label}</span>
@@ -649,7 +750,7 @@ export function Header() {
 
       {categorySidebarOpen && (
         <div className="fixed inset-0 z-[75] bg-[#07111F]/45 backdrop-blur-sm" onClick={() => setCategorySidebarOpen(false)}>
-          <aside className="h-full w-[88vw] max-w-sm bg-white p-5 shadow-[0_28px_90px_rgba(7,17,31,0.28)]" onClick={(event) => event.stopPropagation()}>
+          <aside className="h-full w-[88vw] max-w-sm overflow-y-auto bg-white p-5 shadow-[0_28px_90px_rgba(7,17,31,0.28)]" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3" onClick={() => setCategorySidebarOpen(false)}>
                 <Image src={newArrivalsLogo} alt="Baby Mart logo" width={236} height={72} className="h-14 w-auto object-contain" />
@@ -659,6 +760,50 @@ export function Header() {
             <div className="mt-5">
               <Input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => event.key === "Enter" && submitSearch()} placeholder="Search premium baby products, brands, guides..." />
               <Button onClick={submitSearch} variant="gold" className="mt-2 w-full"><Search size={16} /> Search</Button>
+            </div>
+            <div className="mt-5 border-t border-slate-200 pt-4">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Navigation</div>
+              <div className="grid gap-1">
+                {mainNavItems.map((item) =>
+                  item.label === "PAGES" ? (
+                    <div key={item.label}>
+                      <button
+                        type="button"
+                        onClick={() => setMobilePagesOpen((open) => !open)}
+                        aria-expanded={mobilePagesOpen}
+                        aria-controls="mobile-pages-menu"
+                        className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-[#ff2d55]"
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown size={14} className={`transition ${mobilePagesOpen ? "rotate-180" : ""}`} />
+                      </button>
+                      {mobilePagesOpen ? (
+                        <div id="mobile-pages-menu" className="ml-3 grid gap-1 border-l border-slate-200 pl-3">
+                          {pageSubmenuItems.map((subItem) => (
+                            <Link
+                              key={subItem.href}
+                              href={subItem.href}
+                              onClick={() => setCategorySidebarOpen(false)}
+                              className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-[#fff1f3] hover:text-[#ff2d55]"
+                            >
+                              {subItem.label}
+                            </Link>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setCategorySidebarOpen(false)}
+                      className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#ff2d55]"
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                )}
+              </div>
             </div>
             <div className="mt-5 border-t border-slate-200 pt-4">
               <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">All Categories</div>
