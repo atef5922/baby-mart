@@ -32,14 +32,14 @@ export function ProductGallery({ product }: { product: Product }) {
         })}
       </div>
 
-      <div className="order-1 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)] lg:order-2">
+      <div className="order-1 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-3 shadow-[0_10px_28px_rgba(15,23,42,0.05)] sm:p-4 lg:order-2">
         <div className="relative overflow-hidden rounded-[24px] bg-[#F8FAFC] px-5 py-6 sm:px-7 sm:py-8">
           <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
             {product.discount ? <Badge className="border-rose-200 bg-white text-[#FF3366]">-{product.discount}%</Badge> : null}
             {product.badge ? <Badge className="border-slate-200 bg-white text-slate-600">{product.badge}</Badge> : null}
           </div>
 
-          <div className="relative min-h-[320px] sm:min-h-[420px] lg:min-h-[520px]">
+          <div className="relative min-h-[260px] sm:min-h-[420px] lg:min-h-[520px]">
             <Image
               src={activeImage}
               alt={product.name}
@@ -53,14 +53,14 @@ export function ProductGallery({ product }: { product: Product }) {
           <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
             <button
               type="button"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-[#FFB3CC] hover:text-[#FF3366]"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-[#FFB3CC] hover:text-[#FF3366] sm:px-4"
             >
               <Video size={16} />
               Video Preview
             </button>
             <button
               type="button"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:border-[#FFB3CC] hover:text-[#FF3366]"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-[12px] border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-[#FFB3CC] hover:text-[#FF3366] sm:px-4"
             >
               <View size={16} />
               360 View

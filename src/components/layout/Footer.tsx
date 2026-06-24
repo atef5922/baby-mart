@@ -6,6 +6,24 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/layout/Container";
 
+const supportLinks = [
+  { label: "About Us", href: "/about-us" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "Shipping Info", href: "/contact" },
+  { label: "Returns Policy", href: "/contact" },
+  { label: "FAQs", href: "/about-us" },
+  { label: "Terms of Service", href: "/contact" }
+];
+
+const guideLinks = [
+  { label: "Newborn Checklist", href: "/blog" },
+  { label: "Diapering Tips", href: "/blog" },
+  { label: "Feeding Guide", href: "/blog" },
+  { label: "Safety Measures", href: "/blog" },
+  { label: "Travel Essentials", href: "/blog" },
+  { label: "Product Compare", href: "/shop" }
+];
+
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#07111F] text-white">
@@ -41,16 +59,16 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-[#EF8A9B]">Customer Support</h3>
           <div className="mt-4 grid gap-2 text-sm text-slate-300">
-            {["About Us", "Contact Us", "Shipping Info", "Returns Policy", "FAQs", "Terms of Service"].map((item) => (
-              <Link key={item} href={`/${item.toLowerCase().replaceAll(" ", "-")}`}>{item}</Link>
+            {supportLinks.map((item) => (
+              <Link key={item.label} href={item.href}>{item.label}</Link>
             ))}
           </div>
         </div>
         <div>
           <h3 className="font-semibold text-[#EF8A9B]">Parenting Guide</h3>
           <div className="mt-4 grid gap-2 text-sm text-slate-300">
-            {["Newborn Checklist", "Diapering Tips", "Feeding Guide", "Safety Measures", "Travel Essentials", "Product Compare"].map((item) => (
-              <Link key={item} href={item === "Product Compare" ? "/shop" : "/blog"}>{item}</Link>
+            {guideLinks.map((item) => (
+              <Link key={item.label} href={item.href}>{item.label}</Link>
             ))}
           </div>
         </div>

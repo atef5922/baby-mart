@@ -31,7 +31,7 @@ export function CartContents() {
     <Container className="py-8">
       <motion.h1 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.45 }} className="text-3xl font-semibold tracking-normal">Cart</motion.h1>
       <motion.div
-        className="mt-6 grid gap-6 lg:grid-cols-[1fr_420px]"
+        className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]"
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.15 }}
@@ -48,31 +48,56 @@ export function CartContents() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
-              className="grid gap-4 border-b border-slate-100 p-5 md:grid-cols-[1fr_120px_130px_120px_44px] md:items-center"
+              className="grid gap-4 border-b border-slate-100 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_120px_130px_120px_44px] md:items-center"
             >
-              <div className="flex items-center gap-4">
-                <div className="relative h-28 w-28 overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-slate-100 shadow-[0_12px_30px_rgba(7,17,31,0.06)] md:h-24 md:w-24 xl:h-28 xl:w-28">
-                  <Image src={line.product.image} alt={line.product.name} fill className="object-cover" sizes="112px" />
+              <div className="flex items-start gap-4">
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-gradient-to-br from-slate-50 via-white to-slate-100 shadow-[0_12px_30px_rgba(7,17,31,0.06)] sm:h-28 sm:w-28 md:h-24 md:w-24 xl:h-28 xl:w-28">
+                  <Image src={line.product.image} alt={line.product.name} fill className="object-contain p-2" sizes="112px" />
                 </div>
-                <div>
+                <div className="min-w-0 flex-1">
                   <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">{line.product.brand}</div>
-                  <Link href={`/product/${line.product.slug}`} className="mt-1 block text-lg font-semibold leading-6 text-[#07111F] hover:text-[#9a6d21]">{line.product.name}</Link>
+                  <Link href={`/product/${line.product.slug}`} className="mt-1 block text-base font-semibold leading-6 text-[#07111F] hover:text-[#9a6d21] sm:text-lg">{line.product.name}</Link>
                   <div className="mt-2 text-sm text-slate-500">{line.product.warranty}</div>
+                  <div className="mt-3 grid gap-3 md:hidden">
+                    <MobileValue label="Price" value={formatPrice(line.product.price)} />
+                    <div>
+                      <div className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Quantity</div>
+                      <CartQuantityControl
+                        quantity={line.quantity}
+                        onDecrease={() => update(line.product.id, line.quantity - 1)}
+                        onIncrease={() => update(line.product.id, line.quantity + 1)}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <MobileValue label="Subtotal" value={formatPrice(line.product.price * line.quantity)} />
+                      <motion.button
+                        whileHover={{ scale: 1.07 }}
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => remove(line.product.id)}
+                        aria-label="Remove item"
+                        className="grid h-10 w-10 place-items-center rounded-md border border-slate-200 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                      >
+                        <Trash2 size={17} />
+                      </motion.button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="font-semibold">{formatPrice(line.product.price)}</div>
-              <CartQuantityControl
-                quantity={line.quantity}
-                onDecrease={() => update(line.product.id, line.quantity - 1)}
-                onIncrease={() => update(line.product.id, line.quantity + 1)}
-              />
-              <div className="font-semibold">{formatPrice(line.product.price * line.quantity)}</div>
+              <div className="hidden font-semibold md:block">{formatPrice(line.product.price)}</div>
+              <div className="hidden md:block">
+                <CartQuantityControl
+                  quantity={line.quantity}
+                  onDecrease={() => update(line.product.id, line.quantity - 1)}
+                  onIncrease={() => update(line.product.id, line.quantity + 1)}
+                />
+              </div>
+              <div className="hidden font-semibold md:block">{formatPrice(line.product.price * line.quantity)}</div>
               <motion.button
                 whileHover={{ scale: 1.07 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => remove(line.product.id)}
                 aria-label="Remove item"
-                className="grid h-10 w-10 place-items-center rounded-md text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                className="hidden h-10 w-10 place-items-center rounded-md text-slate-400 transition hover:bg-red-50 hover:text-red-600 md:grid"
               >
                 <Trash2 size={17} />
               </motion.button>
@@ -91,7 +116,7 @@ export function CartContents() {
             <Card className="p-5">
             <h2 className="text-xl font-semibold">Coupon Code</h2>
             <form
-              className="mt-4 flex gap-2"
+              className="mt-4 flex flex-col gap-2 sm:flex-row"
               onSubmit={(event) => {
                 event.preventDefault();
                 if (!coupon.trim()) {
@@ -103,7 +128,7 @@ export function CartContents() {
               }}
             >
               <Input value={coupon} onChange={(event) => setCoupon(event.target.value)} placeholder="Enter coupon code" />
-              <Button type="submit">Apply</Button>
+              <Button type="submit" className="sm:w-auto">Apply</Button>
             </form>
             {couponApplied ? <div className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-700">Coupon {coupon.toUpperCase()} applied.</div> : null}
             </Card>
@@ -140,6 +165,15 @@ function SummaryRow({ label, value, strong, positive }: { label: string; value: 
     <div className={`mt-3 flex justify-between ${strong ? "text-lg font-black" : "text-sm"}`}>
       <span className="text-slate-500">{label}</span>
       <span className={positive ? "font-semibold text-green-600" : "font-semibold"}>{value}</span>
+    </div>
+  );
+}
+
+function MobileValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</div>
+      <div className="text-sm font-semibold text-slate-900">{value}</div>
     </div>
   );
 }

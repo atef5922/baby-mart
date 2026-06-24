@@ -54,7 +54,17 @@ const fallbackImageByCategory: Record<Product["category"], string> = {
   toys: "/products/toy/0_6.jpeg"
 };
 
-export function ProductCard({ product, compact = false, cardVariant = "default" }: { product: Product; compact?: boolean; cardVariant?: "default" | "home" }) {
+export function ProductCard({
+  product,
+  compact = false,
+  cardVariant = "default",
+  viewMode = "grid"
+}: {
+  product: Product;
+  compact?: boolean;
+  cardVariant?: "default" | "home";
+  viewMode?: "grid" | "list";
+}) {
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
   const toggleCompare = useCartStore((state) => state.toggleCompare);
@@ -89,7 +99,7 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
       <motion.div
         initial={{ opacity: 0, y: 24, scale: 0.96 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        className="grid w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_35px_120px_rgba(7,17,31,0.35)] md:grid-cols-[0.9fr_1.1fr]"
+        className="grid max-h-[min(92vh,860px)] w-full max-w-4xl overflow-hidden rounded-[28px] bg-white shadow-[0_35px_120px_rgba(7,17,31,0.35)] md:grid-cols-[0.9fr_1.1fr]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative min-h-[330px] bg-[radial-gradient(circle_at_top,#ffffff_0%,#f8fafc_78%,#eef3f8_100%)]">
@@ -99,7 +109,7 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
             <Image src={displayImage} alt={product.name} fill className="object-contain p-8" sizes="50vw" unoptimized={unoptimizedImage} onError={handleImageError} />
           )}
         </div>
-        <div className="p-6">
+        <div className="overflow-y-auto p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <Badge>{product.badge ?? "Premium Pick"}</Badge>
@@ -243,6 +253,136 @@ export function ProductCard({ product, compact = false, cardVariant = "default" 
                 >
                   {inCart ? <Check size={16} className="text-emerald-600" /> : <ShoppingCart size={16} />}
                 </ProductActionButton>
+              </div>
+            </div>
+          </div>
+        </motion.article>
+        {quickViewModal}
+      </>
+    );
+  }
+
+  if (viewMode === "list") {
+    return (
+      <>
+        <motion.article
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          className="group overflow-hidden rounded-[24px] border border-slate-200/80 bg-white shadow-[0_16px_38px_rgba(7,17,31,0.07)] transition duration-300 hover:border-[#D4A853]/55 hover:shadow-[0_28px_70px_rgba(7,17,31,0.14)]"
+        >
+          <div className="flex h-full flex-col md:flex-row">
+            <Link
+              href={`/product/${product.slug}`}
+              className="relative block min-h-[240px] w-full overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100 md:min-h-full md:w-[280px] md:flex-none"
+            >
+              {fallbackFailed ? (
+                <div className="grid h-full place-items-center px-4 text-center">
+                  <div>
+                    <div className="text-sm font-black text-[#07111F]">{product.brand}</div>
+                    <div className="mt-1 text-xs font-semibold text-slate-500">{product.category.replaceAll("-", " ")}</div>
+                  </div>
+                </div>
+              ) : (
+                <Image
+                  src={displayImage}
+                  alt={product.name}
+                  fill
+                  sizes="(min-width: 1024px) 280px, 100vw"
+                  className="bg-white object-contain p-5 transition duration-500 group-hover:scale-105"
+                  unoptimized={unoptimizedImage}
+                  onError={handleImageError}
+                />
+              )}
+              <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                {product.discount ? <Badge className="border-rose-200/70 bg-rose-600 text-white">-{product.discount}%</Badge> : null}
+                {product.isNew ? <Badge className="border-emerald-200/70 bg-emerald-600 text-white">New</Badge> : null}
+              </div>
+            </Link>
+
+            <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">{product.brand}</div>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] ${
+                        product.stock > 0 ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                      }`}
+                    >
+                      {product.stock > 0 ? "In Stock" : "Sold Out"}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/product/${product.slug}`}
+                    className="mt-3 block line-clamp-2 text-xl font-bold leading-tight text-slate-950 transition hover:text-[#9a6d21]"
+                  >
+                    {product.name}
+                  </Link>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
+                    {product.features.slice(0, 2).join(" • ")}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 md:flex-col">
+                  <ProductActionButton
+                    label={wished ? "Remove from Wishlist" : "Add to Wishlist"}
+                    active={wished}
+                    variant="default"
+                    onClick={() => {
+                      toggleWishlist(product.id);
+                      toast.success(wished ? "Removed from wishlist" : "Saved to wishlist");
+                    }}
+                  >
+                    <Heart size={17} className={wished ? "fill-red-500 text-red-500" : ""} />
+                  </ProductActionButton>
+                  <ProductActionButton
+                    label={compared ? "Remove from Compare" : "Compare"}
+                    active={compared}
+                    variant="default"
+                    onClick={() => {
+                      toggleCompare(product.id);
+                      toast.success(compared ? "Removed from compare" : "Added to compare");
+                    }}
+                  >
+                    {compared ? <Check size={17} className="text-emerald-600" /> : <Scale size={17} />}
+                  </ProductActionButton>
+                  <ProductActionButton label="Quick View" dark={true} variant="default" onClick={() => setQuickOpen(true)}>
+                    <Eye size={17} />
+                  </ProductActionButton>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-xs">
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-[#FFF8EA] px-3 py-1.5 font-semibold text-[#9a6d21]">
+                  <Star className="fill-[#D4A853] text-[#D4A853]" size={14} />
+                  {product.rating} ({product.reviewCount} reviews)
+                </div>
+                <span className="text-slate-400">{product.category.replaceAll("-", " ")}</span>
+                <span className="text-slate-400">EMI from {formatPrice(product.emiMonthly)}</span>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-end gap-2">
+                <div className="text-[1.55rem] font-extrabold tracking-[-0.03em] text-[#07111F]">{formatPrice(product.price)}</div>
+                {product.oldPrice ? <div className="pb-0.5 text-sm font-medium text-slate-400 line-through">{formatPrice(product.oldPrice)}</div> : null}
+              </div>
+
+              <div className="mt-auto flex flex-col gap-3 pt-5 sm:flex-row">
+                <Button
+                  variant="gold"
+                  className="w-full sm:flex-1"
+                  onClick={() => {
+                    addToCart(product);
+                    toast.success(inCart ? `${product.name} quantity updated` : `${product.name} added to cart`);
+                  }}
+                >
+                  <ShoppingCart size={16} />
+                  {inCart ? "Add Again" : "Add to Cart"}
+                </Button>
+                <Button asChild variant="outline" className="w-full sm:flex-1">
+                  <Link href={`/product/${product.slug}`}>View Details</Link>
+                </Button>
               </div>
             </div>
           </div>

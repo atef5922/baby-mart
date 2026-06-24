@@ -44,6 +44,7 @@ const pagesPathnames = ["/about-us", "/contact", "/blog"] as const;
 export function Header() {
   const [userOpen, setUserOpen] = useState(false);
   const [categorySidebarOpen, setCategorySidebarOpen] = useState(false);
+  const [mobileDrawerMode, setMobileDrawerMode] = useState<"menu" | "search">("menu");
   const userMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState("");
@@ -115,7 +116,18 @@ export function Header() {
     router.push(`/search?q=${encodeURIComponent(value)}`);
     setSearchFocused(false);
     setUserOpen(false);
+    setCategorySidebarOpen(false);
     closeCartDrawer();
+  };
+
+  const openMobileMenu = () => {
+    setMobileDrawerMode("menu");
+    setCategorySidebarOpen(true);
+  };
+
+  const openMobileSearch = () => {
+    setMobileDrawerMode("search");
+    setCategorySidebarOpen(true);
   };
 
   useEffect(() => {
@@ -160,6 +172,7 @@ export function Header() {
     closeCartDrawer();
     setUserOpen(false);
     setCategorySidebarOpen(false);
+    setMobileDrawerMode("menu");
     setIsPagesMenuOpen(false);
     setMobilePagesOpen(false);
     setShowHeaderGroupA(true);
@@ -453,7 +466,7 @@ export function Header() {
                 <button
                   type="button"
                   aria-label="Open mobile menu"
-                  onClick={() => setCategorySidebarOpen(true)}
+                  onClick={openMobileSearch}
                   className="grid h-10 w-10 place-items-center rounded-md border border-slate-200 bg-white text-[#111827] transition hover:border-[#ff2d55] hover:text-[#ff2d55]"
                 >
                   <Search size={17} />
@@ -478,7 +491,7 @@ export function Header() {
                 <button
                   type="button"
                   aria-label="Open menu"
-                  onClick={() => setCategorySidebarOpen(true)}
+                  onClick={openMobileMenu}
                   className="grid h-10 w-10 place-items-center rounded-md bg-[#ff2d55] text-white transition hover:bg-[#07111F]"
                 >
                   <Menu size={18} />
@@ -488,7 +501,7 @@ export function Header() {
               <button
                 className="group relative mr-4 hidden h-11 items-center gap-2 rounded-[6px] bg-transparent px-4 text-sm font-medium text-[#111827] transition duration-200 ease-in-out hover:bg-[#fff1f3] lg:inline-flex"
                 onClick={() => {
-                setCategorySidebarOpen(true);
+                openMobileMenu();
             }}
             aria-label="Open categories"
           >
@@ -757,79 +770,130 @@ export function Header() {
               </Link>
               <button onClick={() => setCategorySidebarOpen(false)} className="grid h-10 w-10 place-items-center rounded-md hover:bg-slate-100" aria-label="Close mobile menu"><X size={18} /></button>
             </div>
+            <div className="mt-5 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+              <button
+                type="button"
+                onClick={() => setMobileDrawerMode("menu")}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${mobileDrawerMode === "menu" ? "bg-white text-[#07111F] shadow-sm" : "text-slate-500 hover:text-[#07111F]"}`}
+              >
+                Menu
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileDrawerMode("search")}
+                className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${mobileDrawerMode === "search" ? "bg-white text-[#07111F] shadow-sm" : "text-slate-500 hover:text-[#07111F]"}`}
+              >
+                Search
+              </button>
+            </div>
             <div className="mt-5">
               <Input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => event.key === "Enter" && submitSearch()} placeholder="Search premium baby products, brands, guides..." />
               <Button onClick={submitSearch} className="mt-2 w-full rounded-md !border-transparent !bg-[#FF3366] !text-white hover:!bg-[#07111F] hover:!text-white"><Search size={16} /> Search</Button>
             </div>
-            <div className="mt-5 border-t border-slate-200 pt-4">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Navigation</div>
-              <div className="grid gap-1">
-                {mainNavItems.map((item) =>
-                  item.label === "PAGES" ? (
-                    <div key={item.label}>
-                      <button
-                        type="button"
-                        onClick={() => setMobilePagesOpen((open) => !open)}
-                        aria-expanded={mobilePagesOpen}
-                        aria-controls="mobile-pages-menu"
-                        className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-[#ff2d55]"
-                      >
-                        <span>{item.label}</span>
-                        <ChevronDown size={14} className={`transition ${mobilePagesOpen ? "rotate-180" : ""}`} />
-                      </button>
-                      {mobilePagesOpen ? (
-                        <div id="mobile-pages-menu" className="ml-3 grid gap-1 border-l border-slate-200 pl-3">
-                          {pageSubmenuItems.map((subItem) => (
-                            <Link
-                              key={subItem.href}
-                              href={subItem.href}
-                              onClick={() => setCategorySidebarOpen(false)}
-                              className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-[#fff1f3] hover:text-[#ff2d55]"
-                            >
-                              {subItem.label}
-                            </Link>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  ) : (
+            {mobileDrawerMode === "search" ? (
+              <div className="mt-5 border-t border-slate-200 pt-4">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Suggested Results</div>
+                <div className="grid gap-2">
+                  {suggestions.length ? suggestions.map((product) => (
                     <Link
-                      key={item.href}
-                      href={item.href}
+                      key={product.id}
+                      href={`/product/${product.slug}`}
                       onClick={() => setCategorySidebarOpen(false)}
-                      className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#ff2d55]"
+                      className="rounded-xl border border-slate-200 px-4 py-3 transition hover:border-[#ffd4e2] hover:bg-[#fff7fa]"
                     >
-                      {item.label}
+                      <div className="line-clamp-1 text-sm font-semibold text-slate-900">{product.name}</div>
+                      <div className="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-slate-400">{product.brand} • {product.category}</div>
+                      <div className="mt-2 text-sm font-bold text-[#07111F]">{formatPrice(product.price)}</div>
                     </Link>
-                  )
-                )}
+                  )) : (
+                    <>
+                      {["Diapers", "Baby Food", "Frocks", "Kids Dress"].map((item) => (
+                        <Link
+                          key={item}
+                          href={`/search?q=${encodeURIComponent(item)}`}
+                          onClick={() => setCategorySidebarOpen(false)}
+                          className="rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-[#ffd4e2] hover:bg-[#fff7fa] hover:text-[#ff2d55]"
+                        >
+                          Search for {item}
+                        </Link>
+                      ))}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="mt-5 border-t border-slate-200 pt-4">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">All Categories</div>
-              <div className="grid gap-1">
-                {categories.map((category) => (
-                  <Link
-                    key={category.slug}
-                    href={`/category/${category.slug}`}
-                    onClick={() => setCategorySidebarOpen(false)}
-                    className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#9a6d21]"
-                  >
-                    {category.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div className="mt-5 border-t border-slate-200 pt-4">
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">More</div>
-              <div className="grid gap-1">
-                {[...navItems, { label: "Track Order", href: "/orders" }, { label: "Wishlist", href: "/wishlist" }, { label: "Dashboard", href: "/dashboard" }].map((item) => (
-                  <Link key={item.href} href={item.href} onClick={() => setCategorySidebarOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#9a6d21]">
-                    {item.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Navigation</div>
+                  <div className="grid gap-1">
+                    {mainNavItems.map((item) =>
+                      item.label === "PAGES" ? (
+                        <div key={item.label}>
+                          <button
+                            type="button"
+                            onClick={() => setMobilePagesOpen((open) => !open)}
+                            aria-expanded={mobilePagesOpen}
+                            aria-controls="mobile-pages-menu"
+                            className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-[#ff2d55]"
+                          >
+                            <span>{item.label}</span>
+                            <ChevronDown size={14} className={`transition ${mobilePagesOpen ? "rotate-180" : ""}`} />
+                          </button>
+                          {mobilePagesOpen ? (
+                            <div id="mobile-pages-menu" className="ml-3 grid gap-1 border-l border-slate-200 pl-3">
+                              {pageSubmenuItems.map((subItem) => (
+                                <Link
+                                  key={subItem.href}
+                                  href={subItem.href}
+                                  onClick={() => setCategorySidebarOpen(false)}
+                                  className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-[#fff1f3] hover:text-[#ff2d55]"
+                                >
+                                  {subItem.label}
+                                </Link>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setCategorySidebarOpen(false)}
+                          className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#ff2d55]"
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    )}
+                  </div>
+                </div>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">All Categories</div>
+                  <div className="grid gap-1">
+                    {categories.map((category) => (
+                      <Link
+                        key={category.slug}
+                        href={`/category/${category.slug}`}
+                        onClick={() => setCategorySidebarOpen(false)}
+                        className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#9a6d21]"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">More</div>
+                  <div className="grid gap-1">
+                    {[...navItems, { label: "Track Order", href: "/orders" }, { label: "Wishlist", href: "/wishlist" }, { label: "Dashboard", href: "/dashboard" }].map((item) => (
+                      <Link key={item.href} href={item.href} onClick={() => setCategorySidebarOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-[#9a6d21]">
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
             <div className="mt-5 rounded-xl bg-[#07111F] p-4 text-white">
               <div className="text-sm font-semibold text-[#F3D28A]">Premium Support</div>
               <p className="mt-1 text-xs leading-5 text-slate-300">Installation, EMI, warranty claims, and product guidance are one tap away.</p>

@@ -49,7 +49,7 @@ export default function HomePage() {
               </div>
             </Card>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-rows-2 sm:gap-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:grid-rows-2 sm:gap-5">
               <Card className="group relative overflow-hidden rounded-none border-0 bg-gradient-to-br from-[#e7f7ef] to-[#d8f0df] p-6 shadow-[0_18px_38px_rgba(7,17,31,0.08)] transition duration-300 hover:scale-[1.02] hover:shadow-[0_26px_56px_rgba(7,17,31,0.12)] sm:min-h-[220px] sm:p-6">
                 <div className="absolute inset-0">
                   <Image
@@ -116,7 +116,7 @@ export default function HomePage() {
       </AnimatedSection>
       <AnimatedSection className="py-6 lg:py-8">
         <div className="relative w-full overflow-hidden">
-          <div className="relative w-full aspect-[16/6] sm:aspect-[16/5] lg:aspect-[16/4]">
+          <div className="relative aspect-[5/4] w-full sm:aspect-[16/5] lg:aspect-[16/4]">
             <Image
               src="/products/welcomebanner.png"
               alt="Welcome to Baby Mart banner"
@@ -127,11 +127,11 @@ export default function HomePage() {
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-black/15 to-transparent" />
             <div className="absolute inset-0 flex items-end p-4 sm:p-8">
-              <div className="max-w-xl rounded-lg bg-white/20 px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-sm">
-                <p className="font-poppins text-xs sm:text-sm font-medium uppercase tracking-[0.3em] text-white">
+              <div className="max-w-xl rounded-lg bg-white/20 px-4 py-3 backdrop-blur-sm sm:px-6 sm:py-4">
+                <p className="font-poppins text-xs font-medium uppercase tracking-[0.24em] text-white sm:text-sm">
                   New collection is here
                 </p>
-                <h2 className="mt-2 text-xl sm:text-3xl font-bold text-white">Welcome to Baby Mart</h2>
+                <h2 className="mt-2 text-xl font-bold text-white sm:text-3xl">Welcome to Baby Mart</h2>
                 <a
                   href="/shop"
                   className="mt-4 inline-flex h-11 items-center rounded-md !border-transparent !bg-[#FF3366] px-5 text-sm font-semibold !text-white transition duration-200 ease-in-out hover:!bg-[#07111F] hover:!text-white"
@@ -166,10 +166,10 @@ export default function HomePage() {
                 <div className="inline-flex items-center text-[11px] font-black uppercase tracking-[0.24em] text-[#F8DEAA]">
                   Premium Baby Event
                 </div>
-                <h2 className="mt-5 max-w-[520px] text-[2.45rem] font-black leading-[1.05] tracking-[-0.055em] sm:text-[3.2rem] lg:text-[4rem]">
+                <h2 className="mt-5 max-w-[520px] text-[2rem] font-black leading-[1.05] tracking-[-0.055em] sm:text-[3rem] lg:text-[4rem]">
                   Upgrade Every Moment of Your Baby&apos;s Comfort
                 </h2>
-                <p className="mt-5 max-w-[480px] text-sm leading-7 text-white/82 sm:text-[1rem]">
+                <p className="mt-4 max-w-[480px] text-sm leading-7 text-white/82 sm:text-[1rem]">
                   Discover premium baby cribs, strollers, nursery furniture, and toys selected for maximum safety and comfort.
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-3">

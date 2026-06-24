@@ -31,7 +31,7 @@ export function FlashSale() {
         </div>
       </div>
 
-      <div className="relative mx-auto grid min-h-[300px] w-full max-w-[1536px] items-center gap-8 px-4 sm:px-6 lg:min-h-[340px] lg:grid-cols-[1.08fr_0.92fr] lg:px-8">
+      <div className="relative mx-auto grid min-h-[300px] w-full max-w-[1536px] items-center gap-6 px-4 sm:px-6 lg:min-h-[340px] lg:grid-cols-[1.08fr_0.92fr] lg:gap-8 lg:px-8">
         <div className="max-w-[720px]">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/12 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white/95 backdrop-blur">
             <Zap size={14} className="text-[#ffe082]" />
@@ -43,31 +43,31 @@ export function FlashSale() {
           <p className="mt-3 max-w-2xl text-sm leading-7 text-white/88 lg:text-base">
             Special campaign pricing on premium diaper bundles, baby clothing sets, and nursery gear with certified safety standards and fast delivery.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button asChild variant="gold" size="lg" className="!text-[#07111F]">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Button asChild variant="gold" size="lg" className="w-full !text-[#07111F] sm:w-auto">
               <Link href="/deals">Shop Baby Deals</Link>
             </Button>
-            <Button asChild size="lg" className="border border-white/18 bg-white/12 !text-white shadow-none hover:bg-white/18">
+            <Button asChild size="lg" className="w-full border border-white/18 bg-white/12 !text-white shadow-none hover:bg-white/18 sm:w-auto">
               <Link href="/shop">Explore Baby Collection</Link>
             </Button>
           </div>
         </div>
 
         <div className="flex justify-start lg:justify-end">
-          <div className="w-full max-w-[390px] rounded-[1.8rem] border border-white/16 bg-[#07111F]/36 p-5 shadow-[0_24px_64px_rgba(7,17,31,0.24)] backdrop-blur-xl sm:p-6">
+          <div className="w-full max-w-[390px] rounded-[1.5rem] border border-white/16 bg-[#07111F]/36 p-4 shadow-[0_24px_64px_rgba(7,17,31,0.24)] backdrop-blur-xl sm:rounded-[1.8rem] sm:p-6">
             <div className="flex items-center gap-3 text-white/92">
               <Clock size={18} className="text-[#ffe082]" />
               <span className="text-sm font-semibold uppercase tracking-[0.18em]">Offer Ends In</span>
             </div>
-            <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
               {[
                 { label: "Hours", value: time.hours },
                 { label: "Minutes", value: time.minutes },
                 { label: "Seconds", value: time.seconds }
               ].map((item) => (
-                <div key={item.label} className="rounded-[1.2rem] border border-white/10 bg-white/10 px-3 py-4 text-center">
-                  <div className="text-2xl font-black tracking-[-0.05em] text-white sm:text-3xl">{item.value}</div>
-                  <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72">{item.label}</div>
+                <div key={item.label} className="rounded-[1rem] border border-white/10 bg-white/10 px-2.5 py-3 text-center sm:rounded-[1.2rem] sm:px-3 sm:py-4">
+                  <div className="text-xl font-black tracking-[-0.05em] text-white sm:text-3xl">{item.value}</div>
+                  <div className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/72 sm:mt-2 sm:text-[11px] sm:tracking-[0.18em]">{item.label}</div>
                 </div>
               ))}
             </div>

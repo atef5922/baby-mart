@@ -217,7 +217,7 @@ export function NewArrivalsSection({ products }: NewArrivalsSectionProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.97 }}
               transition={{ duration: 0.24, ease: "easeOut" }}
-              className="w-full max-w-4xl overflow-hidden rounded-[20px] bg-white shadow-[0_28px_86px_rgba(7,17,31,0.3)] md:grid md:grid-cols-[0.96fr_1.1fr]"
+              className="max-h-[min(92vh,860px)] w-full max-w-4xl overflow-hidden rounded-[20px] bg-white shadow-[0_28px_86px_rgba(7,17,31,0.3)] md:grid md:grid-cols-[0.96fr_1.1fr]"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="relative h-80 bg-[radial-gradient(circle_at_top,#ffffff_0%,#f5f8ff_72%,#edf2ff_100%)] md:h-full">
@@ -229,7 +229,7 @@ export function NewArrivalsSection({ products }: NewArrivalsSectionProps) {
                   sizes="(min-width: 1024px) 50vw, 92vw"
                 />
               </div>
-              <div className="p-6">
+              <div className="overflow-y-auto p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">{activeQuickProduct.brand}</div>

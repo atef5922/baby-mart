@@ -3,6 +3,7 @@
 import { Loader2, Minus, Plus, Scale, Share2, ShoppingCart, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useCartStore } from "@/store/cartStore";
@@ -11,6 +12,7 @@ import type { Product } from "@/types/commerce";
 export function ProductPurchasePanel({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
+  const router = useRouter();
   const addToCart = useCartStore((state) => state.addToCart);
   const compare = useCartStore((state) => state.compare);
   const toggleCompare = useCartStore((state) => state.toggleCompare);
@@ -56,7 +58,7 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
   };
 
   return (
-    <Card className="sticky top-28 rounded-[24px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)] sm:p-5">
+    <Card className="rounded-[24px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)] sm:p-5 xl:sticky xl:top-28">
       <div>
         <div className="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">Purchase Options</div>
       </div>
@@ -102,6 +104,7 @@ export function ProductPurchasePanel({ product }: { product: Product }) {
             runActionFeedback("buy");
             addToCart(product, quantity);
             toast.success(`${product.name} is ready for checkout`);
+            router.push("/checkout");
           }}
         >
           {pendingAction === "buy" ? <Loader2 size={16} className="animate-spin" /> : <Wallet size={16} />}

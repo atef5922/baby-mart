@@ -45,17 +45,17 @@ export default async function SearchPage({
     <Container className="py-8">
       <Card className="p-6">
         <h1 className="text-3xl font-semibold tracking-normal">Search Baby Mart</h1>
-        <form action="/search" className="relative mt-5">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <form action="/search" className="mt-5 flex flex-col gap-3 sm:relative sm:block">
+          <Search className="absolute left-3 top-1/2 hidden -translate-y-1/2 text-slate-400 sm:block" size={18} />
           <Input
             name="q"
             defaultValue={query}
             placeholder="Search baby food, frocks, kids dress, pampers..."
-            className="h-12 rounded-xl pl-10 pr-32"
+            className="h-12 rounded-xl sm:pl-10 sm:pr-32"
           />
           <button
             type="submit"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg bg-[#07111F] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#10243C] hover:text-[#F8DEAA]"
+            className="rounded-lg bg-[#07111F] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#10243C] hover:text-[#F8DEAA] sm:absolute sm:right-2 sm:top-1/2 sm:-translate-y-1/2 sm:py-2.5"
           >
             Search
           </button>

@@ -55,6 +55,7 @@ export function CatalogExplorer({
   const [category, setCategory] = useState(lockedCategory ?? "");
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState<FilterState>({
     ...defaultFilterState,
     brands: initialBrand ? [initialBrand] : [],
@@ -161,10 +162,33 @@ export function CatalogExplorer({
                 {title}
               </h1>
               {subtitle ? <p className="mt-1 text-sm text-slate-500">{subtitle}</p> : null}
+              <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+                {visibleProducts.length} product{visibleProducts.length === 1 ? "" : "s"} found
+              </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="icon" className="rounded-md" aria-label="Grid view"><Grid2X2 size={18} /></Button>
-              <Button variant="outline" size="icon" className="rounded-md" aria-label="List view"><List size={18} /></Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className={`rounded-md ${viewMode === "grid" ? "!border-[#FFB3CC] !bg-[#FFF1F6] !text-[#FF3366]" : ""}`}
+                aria-label="Grid view"
+                aria-pressed={viewMode === "grid"}
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid2X2 size={18} />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className={`rounded-md ${viewMode === "list" ? "!border-[#FFB3CC] !bg-[#FFF1F6] !text-[#FF3366]" : ""}`}
+                aria-label="List view"
+                aria-pressed={viewMode === "list"}
+                onClick={() => setViewMode("list")}
+              >
+                <List size={18} />
+              </Button>
             </div>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_180px_180px_180px]">
@@ -195,7 +219,7 @@ export function CatalogExplorer({
 
           {visibleProducts.length ? (
             <>
-              <ProductGrid products={paginatedProducts} cardVariant={productCardMode} />
+              <ProductGrid products={paginatedProducts} cardVariant={productCardMode} viewMode={viewMode} />
               <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setPage} />
             </>
           ) : (

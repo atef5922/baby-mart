@@ -9,6 +9,8 @@ type HeroSlide = {
   id: string;
   image: string;
   imageClass?: string;
+  mobileImageClass?: string;
+  mobileAspectClass?: string;
   badge?: string;
   overline?: string;
   title?: string;
@@ -28,6 +30,8 @@ export function Hero() {
         id: "hero-11",
         image: "/products/banner11.png",
         imageClass: "object-center",
+        mobileImageClass: "object-center",
+        mobileAspectClass: "aspect-[1983/793]",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
@@ -37,6 +41,8 @@ export function Hero() {
         id: "hero-12",
         image: "/products/banner12.png",
         imageClass: "object-center",
+        mobileImageClass: "object-center",
+        mobileAspectClass: "aspect-[1702/924]",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
@@ -46,6 +52,8 @@ export function Hero() {
         id: "hero-13",
         image: "/products/banner13.png",
         imageClass: "object-center",
+        mobileImageClass: "object-center",
+        mobileAspectClass: "aspect-[1828/860]",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
@@ -55,6 +63,8 @@ export function Hero() {
         id: "hero-14",
         image: "/products/banner14.png",
         imageClass: "object-center",
+        mobileImageClass: "object-center",
+        mobileAspectClass: "aspect-[1704/923]",
         ctaText: "Shop Now",
         ctaLink: "/shop",
         contentAlign: "left",
@@ -94,7 +104,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_26%,rgba(255,255,255,0.08),transparent_22%)]" />
 
       <div className="relative">
-        <div className="relative min-h-[380px] sm:min-h-[430px] md:min-h-[500px] lg:min-h-[560px]">
+        <div className={`relative min-h-[220px] bg-white ${slide.mobileAspectClass ?? "aspect-[2/1]"} sm:aspect-auto sm:min-h-[430px] md:min-h-[500px] lg:min-h-[560px]`}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={`${slide.id}-image`}
@@ -111,7 +121,7 @@ export function Hero() {
                   fill
                   priority
                   sizes="100vw"
-                  className={`object-cover ${slide.imageClass ?? "object-center"}`}
+                  className={`bg-white object-contain object-center sm:object-cover ${slide.mobileImageClass ?? "object-center"} ${slide.imageClass ?? "sm:object-center"}`}
                 />
               </Link>
             </motion.div>
@@ -124,11 +134,11 @@ export function Hero() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="relative z-10 flex min-h-[380px] items-start sm:min-h-[430px] md:min-h-[500px] lg:min-h-[560px] pt-10 pb-8"
+              className="pointer-events-none relative z-10 flex h-full min-h-[220px] items-end sm:min-h-[430px] sm:items-start md:min-h-[500px] lg:min-h-[560px]"
             >
-              <div className="mx-auto w-full max-w-[1536px] px-4 sm:px-6 lg:px-8 2xl:px-10">
+              <div className="mx-auto w-full max-w-[1536px] px-4 pb-10 sm:px-6 sm:pt-10 sm:pb-8 lg:px-8 2xl:px-10">
                 <div className={`max-w-[680px] text-white ${slide.contentClass ?? ""} ${contentAlignClass}`}>
-                  <Link href={slide.ctaLink} aria-label={`Go to ${slide.ctaText} (${slide.id})`} className="hero-copy block">
+                  <Link href={slide.ctaLink} aria-label={`Go to ${slide.ctaText} (${slide.id})`} className="pointer-events-auto hero-copy block">
                     <div className="flex flex-col items-start gap-3">
                     {slide.overline ? (
                       <p className="text-sm font-black uppercase tracking-[0.18em] text-[#FF9EAE] sm:text-[0.95rem]">
@@ -153,8 +163,8 @@ export function Hero() {
           </AnimatePresence>
         </div>
 
-        <div className="absolute inset-x-0 bottom-5 z-30 flex items-center justify-center">
-          <div className="flex items-center gap-2.5">
+        <div className="absolute inset-x-0 bottom-3 z-30 flex items-center justify-center sm:bottom-5">
+          <div className="flex items-center gap-2 rounded-full bg-[#07111F]/22 px-3 py-2 backdrop-blur-sm sm:gap-2.5 sm:bg-transparent sm:px-0 sm:py-0">
           {slides.map((item, index) => (
             <button
               key={item.id}
