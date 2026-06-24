@@ -2,7 +2,7 @@
 
 import { Grid2X2, List, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { Product } from "@/types/commerce";
+import type { Product, ProductCardVariant, ProductGridViewMode } from "@/types/commerce";
 import { DropdownSelect } from "@/components/commerce/DropdownSelect";
 import { Filters, defaultFilterState, type FilterState } from "@/components/commerce/Filters";
 import { Pagination } from "@/components/commerce/Pagination";
@@ -47,7 +47,7 @@ export function CatalogExplorer({
   lockedCategory?: string;
   initialBrand?: string;
   hideToolbar?: boolean;
-  productCardMode?: "default" | "home";
+  productCardMode?: ProductCardVariant;
 }) {
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("popular");
@@ -55,7 +55,7 @@ export function CatalogExplorer({
   const [category, setCategory] = useState(lockedCategory ?? "");
   const [page, setPage] = useState(1);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<ProductGridViewMode>("grid");
   const [filters, setFilters] = useState<FilterState>({
     ...defaultFilterState,
     brands: initialBrand ? [initialBrand] : [],

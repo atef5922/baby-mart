@@ -8,6 +8,10 @@ export type CategorySlug =
   | "shorts"
   | "toys";
 
+export type ProductCardVariant = "default" | "home";
+
+export type ProductGridViewMode = "grid" | "list";
+
 export interface Category {
   slug: CategorySlug;
   name: string;

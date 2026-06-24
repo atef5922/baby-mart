@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/commerce/ProductCard";
-import type { Product } from "@/types/commerce";
+import type { Product, ProductCardVariant, ProductGridViewMode } from "@/types/commerce";
 
 export function ProductGrid({
   products,
@@ -9,8 +9,8 @@ export function ProductGrid({
 }: {
   products: Product[];
   compact?: boolean;
-  cardVariant?: "default" | "home";
-  viewMode?: "grid" | "list";
+  cardVariant?: ProductCardVariant;
+  viewMode?: ProductGridViewMode;
 }) {
   const gridClass =
     viewMode === "list"

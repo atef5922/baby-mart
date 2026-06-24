@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
-import type { Product } from "@/types/commerce";
+import type { Product, ProductCardVariant, ProductGridViewMode } from "@/types/commerce";
 
 const hashColorFromSeed = (seed: string) => {
   let hash = 0;
@@ -62,8 +62,8 @@ export function ProductCard({
 }: {
   product: Product;
   compact?: boolean;
-  cardVariant?: "default" | "home";
-  viewMode?: "grid" | "list";
+  cardVariant?: ProductCardVariant;
+  viewMode?: ProductGridViewMode;
 }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const toggleWishlist = useCartStore((state) => state.toggleWishlist);
